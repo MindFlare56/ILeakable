@@ -1,0 +1,235 @@
+mixin main-header()
+  // Vendor
+  link(rel='stylesheet', href='/node_modules/startbootstrap-sb-admin-2/css/sb-admin-2.min.css')
+  link(rel='stylesheet', href='/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css')
+  link(href='/node_modules/@fortawesome/fontawesome-free/css/all.min.css', rel='stylesheet')
+  script(src='node_modules/startbootstrap-sb-admin-2/js/sb-admin-2.min.js')
+  script(src='/node_modules/@fortawesome/fontawesome-free/js/all.min.js')
+
+  //local
+  link(rel='stylesheet', href='/stylesheets/main.min.css')
+
+mixin main()
+  body#page-top
+    // Page Wrapper
+    #wrapper
+      // Sidebar
+      ul#accordionSidebar.navbar-nav.sidebar.sidebar-dark.accordion
+        #accordionSidebarContent
+          // Sidebar - Brand
+          a.sidebar-brand.d-flex.align-items-center.justify-content-center(href='index.html')
+            .sidebar-brand-text.mx-3
+              | ILeakable
+          // Divider
+          hr.sidebar-divider.my-0
+          // Nav Item - Dashboard
+          li.nav-item
+            a.nav-link(href='index.html')
+              i.fas.fa-fw.fa-home
+              span.after-fas Home
+          // Divider
+          hr.sidebar-divider
+          // Heading
+          .sidebar-heading
+            | Actions
+          li.nav-item
+            a.nav-link(href='#')
+              i.fas.fa-fw.fa-plus
+              span.after-fas Operations
+          hr.sidebar-divider
+          // Heading
+          .sidebar-heading
+            | Settings
+          // Nav Item - Pages Collapse Menu
+          li.nav-item
+            a.nav-link.collapsed(href='#', data-toggle='collapse', data-target='#collapseTwo', aria-expanded='true', aria-controls='collapseTwo')
+              i.fas.fa-fw.fa-cog
+              span.after-fas Parameters
+            #collapseTwo.collapse(aria-labelledby='headingTwo', data-parent='#accordionSidebar')
+              .bg-white.py-2.collapse-inner.rounded
+                h6.collapse-header Custom Components:
+                a.collapse-item(href='buttons.html') Buttons
+                a.collapse-item(href='cards.html') Cards
+          // Nav Item - Utilities Collapse Menu
+          li.nav-item
+            a.nav-link.collapsed(href='#', data-toggle='collapse', data-target='#collapseUtilities', aria-expanded='true', aria-controls='collapseUtilities')
+              i.fas.fa-fw.fa-wrench
+              span.after-fas Configurations
+            #collapseUtilities.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
+              .bg-white.py-2.collapse-inner.rounded
+                h6.collapse-header Custom Utilities:
+                a.collapse-item(href='utilities-color.html') Colors
+                a.collapse-item(href='utilities-border.html') Borders
+                a.collapse-item(href='utilities-animation.html') Animations
+                a.collapse-item(href='utilities-other.html') Other
+          // Divider
+          hr.sidebar-divider
+      // End of Sidebar
+      // Content Wrapper
+      #content-wrapper.d-flex.flex-column
+        block main-content
+
+mixin home()
+  #content
+    // Begin Page Content
+    .container-fluid
+      // Page Heading
+      .heading-row.row
+        .heading-text.col-8
+          br
+          h1#white-title.h3.mb-2 Transaction history
+          p.mb-4 A list of the recent transaction you did why your #account-number
+        .heading-menu.col-4
+
+      // DataTales Example
+      .card.shadow.mb-4
+        .card-header.py-3
+          h6.m-0.font-weight-bold.text-primary DataTables Example
+        .card-body
+          .table-responsive
+            table#dataTable.table.table-bordered(width='100%', cellspacing='0')
+              thead
+                tr
+                  th Date
+                  th Operation
+                  th Time
+                  th Description
+                  th Amount
+                  th Balance
+              tbody
+                tr
+                  td 2019-11-24
+                  td Hurteau
+                  td 8:40pm
+                  td That's the stuff
+                  td 10.00$
+                  td $140,800
+                tr
+                  td 2019-11-24
+                  td Pornhub.com
+                  td 4:20pm
+                  td We won't tell you teacher
+                  td 100.00$
+                  td $150,800
+                tr
+                  td 2019-11-23
+                  td Amazon.ca
+                  td 9:00am
+                  td Two day delivery or not
+                  td 10.00$
+                  td $250,800
+                tr
+                  td 2019-11-22
+                  td Cegepst
+                  td 11:22am
+                  td Welcome to the real world jackass
+                  td 40.00$
+                  td $260,800
+                tr
+                  td 2019-10-12
+                  td Tim Horton
+                  td 12:40pm
+                  td Less for more
+                  td 30.00$
+                  td $400,800
+      // Area Chart
+      .card.shadow.mb-4
+        .card-header.py-3
+          h6.m-0.font-weight-bold.text-primary Area Chart
+        .card-body
+          .chart-area
+            canvas#myAreaChart
+          hr
+          |                   Styling for the area chart can be found in the
+          code /js/demo/chart-area-demo.js
+          |  file.
+
+    // /.container-fluid
+    // End of Main Content
+    // Footer
+    +footer()
+    +main-scripts()
+
+
+mixin fund()
+  #content
+    .container-fluid
+      .heading-row.row
+        .heading-text.col-8
+          br
+          h1#white-title.h3.mb-2 Operations
+          p.mb-4 In this section you will be able to add and send funds.
+        .heading-menu.col-4
+      .row
+        .col-lg-6
+          .card.shadow.mb-4
+            .card-header.py-3
+              h6.m-0.font-weight-bold.text-primary Add fund
+            .card-body
+              .row
+                .col-6
+                  .row
+                    .form-check
+                      input#blankRadio1.form-check-input.position-static(type='radio', name='blankRadio', value='option1', aria-label='...')
+                    a.fas.fa-credit-card.fa-2x
+                    span Account#123123212
+                .col-6#add-fund
+                  a.btn.btn-success.btn-circle.btn-sm(href='#')
+                    i.fas.fa-plus
+                .col-6
+                  br
+                  .row
+                    .form-check
+                      input#blankRadio1.form-check-input.position-static(type='radio', name='blankRadio', value='option1', aria-label='...')
+                    a.fas.fa-credit-card.fa-2x
+                    span Account#234124123
+        .col-lg-6
+          .mb-4
+            .card.border-left-success.shadow.h-100.py-2
+              .card-body
+                .row.no-gutters.align-items-center
+                  .col.mr-2
+                    .text-xs.font-weight-bold.text-success.text-uppercase.mb-1 Earnings (Monthly)
+                    .h5.mb-0.font-weight-bold.text-gray-800 $40,000
+                  .col-auto
+                    i.fas.fa-calendar.fa-2x.text-gray-300
+        .col-lg-6
+          .card.shadow.mb-4
+            .card-header.py-3
+              h6.m-0.font-weight-bold.text-primary Send fund
+            .card-body
+              | The styling for this basic card example is created by using default Bootstrap utility classes. By using utility classes, the style of the card component can be easily modified with no need for any custom CSS!
+
+  +footer()
+  +main-scripts()
+
+mixin footer()
+  footer.sticky-footer
+    .container.my-auto
+      .copyright.text-center.my-auto
+        span Copyright © Your Website 2019
+  // End of Footer
+  // End of Content Wrapper
+  // End of Page Wrapper
+  // Scroll to Top Button
+  a.scroll-to-top.rounded(href='#page-top')
+    i.fas.fa-angle-up
+  // Logout Modal
+
+mixin main-scripts()
+  #logoutModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5#exampleModalLabel.modal-title Ready to Leave?
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+            span(aria-hidden='true') ×
+        .modal-body Select "Logout" below if you are ready to end your current session.
+        .modal-footer
+          button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
+          a.btn.btn-primary(href='login.html') Logout
+  // Page level plugins
+  script(src='/node_modules/datatables.net/js/jquery.dataTables.min.js')
+  script(src='/node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js')
+  // Page level custom scripts
+  script(src='/javascripts/main.js')

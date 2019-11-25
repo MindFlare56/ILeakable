@@ -1,16 +1,26 @@
+include mixins/base
+
 doctype html
 html
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/stylesheets/vendor/bootstrap.min.css')
-    link(rel='stylesheet', href='/sass/style.css')
-    link(rel='stylesheet', href='/sass/login.css')
-    script(src="/javascripts/vendor/jquery.min.js")
-    script(src="/javascripts/vendor/bootstrap.min.js")
-    script(src="/javascripts/vendor/jquery/jquery.min.js")
-    script(src="/javascripts/vendor/bootstrap/js/bootstrap.bundle.min.js")
+    title= "ILeakable"
+    // Vendor
+    //todo make a use reference like this https://stackoverflow.com/questions/27464168/how-to-include-scripts-located-inside-the-node-modules-folder
+    link(rel='stylesheet', href='/node_modules/bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/node_modules/chart.js/dist/Chart.min.css')
+    script(src='/node_modules/jquery/dist/jquery.min.js')
+    script(src='/node_modules/jquery.easing/jquery.easing.min.js')
+    script(src='/node_modules/bootstrap/dist/js/bootstrap.min.js')
+    script(src='/node_modules/chart.js/dist/Chart.bundle.min.js')
+    script(src='/node_modules/chart.js/dist/Chart.min.js')
+
+    // Local
+    link(rel='stylesheet', href='/stylesheets/style.min.css')
+    script(src="/javascripts/js.js")
+
+    block header-content
   body
     block content
-      p asd
+
+    block script
 

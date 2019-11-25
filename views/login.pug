@@ -1,17 +1,68 @@
 extends layout
 
+block header-content
+  link(rel='stylesheet', href='/stylesheets/login.min.css')
+
 block content
   #login-card.card
       #login-left
         .card-media
-          img(src="/assets/android-icon.jpg" alt="android")
-          img(src="/assets/apple-icon.jpg" alt="apple")
+          a(href="#youwish")
+            img(src="/assets/android-icon.png" alt="android")
+          a(href="#youwish")
+            img(src="/assets/apple-icon.png" alt="apple")
+        .card-connection-buttons
+          button.card-login-button login
+          br
+          br
+          button.card-register-button register
+        .card-title
+          h5 ILeakable National Bank
       #login-right
-        .card-body
-          h5.card-title Card title
-          p.card-text
-            | This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
-          p.card-text
-            small.text-muted Last updated 3 mins ago
+        #loginForm
+          br
+          br
+          .card-body.row
+            img.logo(src="/assets/I.PNG")
+            h5.logo-text Leakable
+          .moto
+            h5.italic We protect your investment from any kind of leak.
+          br
+          br
+          form.margin-side-128(action='/submit-login', method='post')
+            .input-group.form-group
+              img.login-icon(src='/assets/mail-icon.png')
+              input.form-control(type='text', placeholder='Mail address')
+            .input-group.form-group
+              img.login-icon(src='/assets/password-icon.png')
+              input.form-control(type='password', placeholder='Password')
+            br
+            .form-group
+              button.align-right.connection-buttons Linking in
+        #registerForm
+          .card-body.row
+            img.logo(src="/assets/I.PNG")
+            h5.logo-text Leakable
+          br
+          form.margin-side-128(action='/submit-register', method='post').login-card-form
+            .input-group.form-group
+              img.login-icon(src='/assets/mail-icon.png')
+              input.form-control(type='text', placeholder='Mail address')
+            .input-group.form-group
+              img.login-icon(src='/assets/username-icon.png')
+              input.form-control(type='text', placeholder='First name')
+            .input-group.form-group
+              img.login-icon(src='/assets/username-icon.png')
+              input.form-control(type='text', placeholder='Last name')
+            .input-group.form-group
+              img.login-icon(src='/assets/password-icon.png')
+              input.form-control(type='password', placeholder='Password')
+            .input-group.form-group
+              img.login-icon(src='/assets/password-icon.png')
+              input.form-control(type='password', placeholder='Password confirmation')
+            br
+            .form-group
+              button.connection-buttons Get Started
+
 
 
