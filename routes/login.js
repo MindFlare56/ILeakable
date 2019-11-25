@@ -4,6 +4,10 @@ const router = express.Router();
 router.get('/login', function(req, res, next) {
     res.render('login.pug');
 });
+
+router.get('/1234', function(req, res, next) {
+    res.render('login.pug');
+});
 /*
 express.post('/submit-login', function(req, res, next) {
     //todo
