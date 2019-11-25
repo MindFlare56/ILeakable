@@ -24,7 +24,7 @@ mixin main()
           hr.sidebar-divider.my-0
           // Nav Item - Dashboard
           li.nav-item
-            a.nav-link(href='index.html')
+            a.nav-link(href='/main')
               i.fas.fa-fw.fa-home
               span.after-fas Home
           // Divider
@@ -33,7 +33,7 @@ mixin main()
           .sidebar-heading
             | Actions
           li.nav-item
-            a.nav-link(href='#')
+            a.nav-link(href='/mainfund')
               i.fas.fa-fw.fa-plus
               span.after-fas Operations
           hr.sidebar-divider
@@ -45,7 +45,7 @@ mixin main()
             a.nav-link.collapsed(href='#', data-toggle='collapse', data-target='#collapseTwo', aria-expanded='true', aria-controls='collapseTwo')
               i.fas.fa-fw.fa-cog
               span.after-fas Parameters
-            #collapseTwo.collapse(aria-labelledby='headingTwo', data-parent='#accordionSidebar')
+            //#collapseTwo.collapse(aria-labelledby='headingTwo', data-parent='#accordionSidebar')
               .bg-white.py-2.collapse-inner.rounded
                 h6.collapse-header Custom Components:
                 a.collapse-item(href='buttons.html') Buttons
@@ -55,7 +55,7 @@ mixin main()
             a.nav-link.collapsed(href='#', data-toggle='collapse', data-target='#collapseUtilities', aria-expanded='true', aria-controls='collapseUtilities')
               i.fas.fa-fw.fa-wrench
               span.after-fas Configurations
-            #collapseUtilities.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
+            //#collapseUtilities.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
               .bg-white.py-2.collapse-inner.rounded
                 h6.collapse-header Custom Utilities:
                 a.collapse-item(href='utilities-color.html') Colors
@@ -63,6 +63,11 @@ mixin main()
                 a.collapse-item(href='utilities-animation.html') Animations
                 a.collapse-item(href='utilities-other.html') Other
           // Divider
+          hr.sidebar-divider
+          li.nav-item
+            a.nav-link(href='/')
+              i.fas.fa-fw.fa-sign-out-alt
+              span.after-fas Log out
           hr.sidebar-divider
       // End of Sidebar
       // Content Wrapper
@@ -77,14 +82,30 @@ mixin home()
       .heading-row.row
         .heading-text.col-8
           br
+          br
           h1#white-title.h3.mb-2 Transaction history
-          p.mb-4 A list of the recent transaction you did why your #account-number
-        .heading-menu.col-4
-
+          p.mb-4 A list of the recent transaction you did why your account.
+        .bitcoin-enable
+          br
+          a(href='#')
+            img(src='/assets/bitcoin.png').size-64.margin-top-16.margin-right-24
+        .heading-menu.col-3
+          br
+          .mb-4
+            .card.border-left-success.shadow.h-100.py-2
+              .card-body
+                .row
+                  a(href='#')
+                    .fas.fa-exchange-alt.margin-top-8.margin-left-8.margin-right-24
+                  .row.margin-left-16
+                    a(href='#')
+                      .fas.fa-credit-card.fa-2x.margin-side-8
+                    span.margin-side-8=("#124441421412")
+                    span.margin-left-16=("Balance: 400000" + "$")
       // DataTales Example
       .card.shadow.mb-4
         .card-header.py-3
-          h6.m-0.font-weight-bold.text-primary DataTables Example
+          h6.m-0.font-weight-bold.text-primary Account summary
         .card-body
           .table-responsive
             table#dataTable.table.table-bordered(width='100%', cellspacing='0')
@@ -135,14 +156,10 @@ mixin home()
       // Area Chart
       .card.shadow.mb-4
         .card-header.py-3
-          h6.m-0.font-weight-bold.text-primary Area Chart
+          h6.m-0.font-weight-bold.text-primary Monthly transaction chart
         .card-body
           .chart-area
             canvas#myAreaChart
-          hr
-          |                   Styling for the area chart can be found in the
-          code /js/demo/chart-area-demo.js
-          |  file.
 
     // /.container-fluid
     // End of Main Content
@@ -161,44 +178,82 @@ mixin fund()
           p.mb-4 In this section you will be able to add and send funds.
         .heading-menu.col-4
       .row
-        .col-lg-6
+        .col-lg-8
           .card.shadow.mb-4
             .card-header.py-3
               h6.m-0.font-weight-bold.text-primary Add fund
             .card-body
               .row
-                .col-6
-                  .row
-                    .form-check
-                      input#blankRadio1.form-check-input.position-static(type='radio', name='blankRadio', value='option1', aria-label='...')
-                    a.fas.fa-credit-card.fa-2x
-                    span Account#123123212
-                .col-6#add-fund
-                  a.btn.btn-success.btn-circle.btn-sm(href='#')
-                    i.fas.fa-plus
-                .col-6
+                table.col-7.margin-side-32
+                  thead
+                    tr
+                      th Accounts
+                  tbody#add-fund-table
+                    tr
+                      td
+                        br
+                        +radioCreditCard('Accounts', 1231232125, "")
+                        br
+                        +radioCreditCard('Accounts2', 234124123, "")
+
+                .col-4
                   br
-                  .row
-                    .form-check
-                      input#blankRadio1.form-check-input.position-static(type='radio', name='blankRadio', value='option1', aria-label='...')
-                    a.fas.fa-credit-card.fa-2x
-                    span Account#234124123
-        .col-lg-6
+                  br
+                  .row#add-fund
+                    h5 Amount:
+                    form.margin-left-8.margin-right-4
+                      input
+                    h5.margin-right-24 $
+                    a.btn.btn-primary.btn-circle.btn-sm(href='#')
+                      i.fas.fa-paper-plane
+
+        .col-lg-4
           .mb-4
             .card.border-left-success.shadow.h-100.py-2
               .card-body
                 .row.no-gutters.align-items-center
-                  .col.mr-2
-                    .text-xs.font-weight-bold.text-success.text-uppercase.mb-1 Earnings (Monthly)
-                    .h5.mb-0.font-weight-bold.text-gray-800 $40,000
-                  .col-auto
-                    i.fas.fa-calendar.fa-2x.text-gray-300
-        .col-lg-6
+                  .col
+                    .text-xs.font-weight-bold.text-success.text-uppercase.mb-1 Accounts (Balances)
+                    br
+                    +creditCard('Accounts', 1231232125, 40000, "")
+                    hr
+                    +creditCard('Accounts2', 234124123, 10000, "")
+                    hr
+
+        .col-lg-8
           .card.shadow.mb-4
             .card-header.py-3
-              h6.m-0.font-weight-bold.text-primary Send fund
-            .card-body
-              | The styling for this basic card example is created by using default Bootstrap utility classes. By using utility classes, the style of the card component can be easily modified with no need for any custom CSS!
+              h6.m-0.font-weight-bold.text-danger Send fund
+            .card-body.row
+              table.col-7.margin-side-32
+                thead
+                  tr
+                    th From
+                    th To
+                    th
+                tbody#send-fund-table
+                  tr
+                    td
+                      br
+                      +radioCreditCard('Accounts', 1231232125, "")
+                      br
+                      +radioCreditCardTo('Accounts3', 834124123, "")
+                    td
+                      br
+                      +radioCreditCard('Accounts2', 234124123, "")
+                      br
+                      +radioCreditCardTo('Accounts4', 9231232125, "")
+
+              .col-4
+                br
+                br
+                .row#send-fund
+                  h5 Amount:
+                  form.margin-left-8.margin-right-4
+                    input
+                  h5.margin-right-24 $
+                  a.btn.btn-danger.btn-circle.btn-sm(href='#')
+                    i.fas.fa-paper-plane
 
   +footer()
   +main-scripts()
@@ -207,7 +262,7 @@ mixin footer()
   footer.sticky-footer
     .container.my-auto
       .copyright.text-center.my-auto
-        span Copyright © Your Website 2019
+        span Copyright © ILeakable 2019
   // End of Footer
   // End of Content Wrapper
   // End of Page Wrapper
@@ -233,3 +288,34 @@ mixin main-scripts()
   script(src='/node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js')
   // Page level custom scripts
   script(src='/javascripts/main.js')
+
+mixin creditCard(accountName, accountNumber, fund, description)
+  .row
+    .col-8.margin-left-16
+      .row
+        a.fas.fa-credit-card.fa-2x.margin-side-8
+        span=(accountName + '#' + accountNumber)
+      .row
+        span=(description === "" ? "" : description)
+    .col.mr-2
+      .h5.mb-0.font-weight-bold.text-gray-800=(fund + "$")
+
+mixin radioCreditCard(accountName, accountNumber, description)
+  .row
+    .form-check
+      input#blankRadio1.form-check-input.position-static(type='radio', name='blankRadio', value='option1', aria-label='...')
+    a.fas.fa-credit-card.fa-2x.margin-side-8
+    .col
+      span=(accountName + '#' + accountNumber)
+      br
+      span=(description === "" ? "" : description)
+
+mixin radioCreditCardTo(accountName, accountNumber, description)
+  .row
+    .form-check
+      input#blankRadio2.form-check-input.position-static(type='radio', name='blankRadioTo', value='option1', aria-label='...')
+    a.fas.fa-credit-card.fa-2x.margin-side-8
+    .col
+      span=(accountName + '#' + accountNumber)
+      br
+      span=(description === "" ? "" : description)
