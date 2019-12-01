@@ -29,13 +29,13 @@ block content
             h5.italic We protect your investment from any kind of leak.
           br
           br
-          form.margin-side-128(action='/submit-login', method='post')
+          form.margin-side-128(action='/login/submit-login', method='post')
             .input-group.form-group
               img.login-icon(src='/assets/mail-icon.png')
-              input.form-control(type='text', placeholder='Mail address')
+              input.form-control(type='text', placeholder='Mail address', name='mail')
             .input-group.form-group
               img.login-icon(src='/assets/password-icon.png')
-              input.form-control(type='password', placeholder='Password')
+              input.form-control(type='password', placeholder='Password', name='password')
             br
             .form-group
               button.align-right.connection-buttons Linking in
@@ -44,22 +44,22 @@ block content
             img.logo(src="/assets/I.PNG")
             h5.logo-text Leakable
           br
-          form.margin-side-128(action='/submit-register', method='post').login-card-form
+          form.margin-side-128(action='/login/submit-register', method='post').login-card-form
             .input-group.form-group
               img.login-icon(src='/assets/mail-icon.png')
-              input.form-control(type='text', placeholder='Mail address')
+              input.form-control(type='text', placeholder='Mail address', name='mail')
             .input-group.form-group
               img.login-icon(src='/assets/username-icon.png')
-              input.form-control(type='text', placeholder='First name')
+              input.form-control(type='text', placeholder='First name', name='firstName')
             .input-group.form-group
               img.login-icon(src='/assets/username-icon.png')
-              input.form-control(type='text', placeholder='Last name')
+              input.form-control(type='text', placeholder='Last name', name='lastName')
             .input-group.form-group
               img.login-icon(src='/assets/password-icon.png')
-              input.form-control(type='password', placeholder='Password')
+              input.form-control(type='password', placeholder='Password', name='password')
             .input-group.form-group
               img.login-icon(src='/assets/password-icon.png')
-              input.form-control(type='password', placeholder='Password confirmation')
+              input.form-control(type='password', placeholder='Password confirmation', name='passwordConfirm')
             br
             .form-group
               button.connection-buttons Get Started

@@ -1,12 +1,8 @@
-;'use strict';
+const express = require('express');
+const router = express.Router();
 
-var express = require('express');
-var router = express.Router();
-
-console.log("?");
-
-router.get('/', function(req, res, next) {
-  res.redirect('/login');
+router.get('/', function(req, res) {
+  res.render('login.pug');
 });
 
 module.exports = router;

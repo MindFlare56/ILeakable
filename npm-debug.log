@@ -1,0 +1,40 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'rebuild', 'node-sass' ]
+2 info using npm@1.4.21
+3 info using node@v0.10.29
+4 info readInstalled object
+5 verbose rebuild path, id [ '/home/etudiant/ILeakable/node_modules/node-sass',
+5 verbose rebuild   'node-sass@4.13.0' ]
+6 silly rebuild set [ '/home/etudiant/ILeakable/node_modules/node-sass' ]
+7 info build /home/etudiant/ILeakable/node_modules/node-sass
+8 info preinstall node-sass@4.13.0
+9 verbose linkStuff [ false, false, false, '/home/etudiant/ILeakable/node_modules' ]
+10 info linkStuff node-sass@4.13.0
+11 verbose linkBins node-sass@4.13.0
+12 verbose link bins [ { 'node-sass': 'bin/node-sass' },
+12 verbose link bins   '/home/etudiant/ILeakable/node_modules/.bin',
+12 verbose link bins   false ]
+13 verbose linkMans node-sass@4.13.0
+14 verbose rebuildBundles node-sass@4.13.0
+15 info install node-sass@4.13.0
+16 verbose unsafe-perm in lifecycle false
+17 info postinstall node-sass@4.13.0
+18 verbose unsafe-perm in lifecycle false
+19 info node-sass@4.13.0 Failed to exec postinstall script
+20 error node-sass@4.13.0 postinstall: `node scripts/build.js`
+20 error Exit status 1
+21 error Failed at the node-sass@4.13.0 postinstall script.
+21 error This is most likely a problem with the node-sass package,
+21 error not with npm itself.
+21 error Tell the author that this fails on your system:
+21 error     node scripts/build.js
+21 error You can get their info via:
+21 error     npm owner ls node-sass
+21 error There is likely additional logging output above.
+22 error System Linux 3.16.0-4-amd64
+23 error command "/usr/bin/nodejs" "/usr/bin/npm" "rebuild" "node-sass"
+24 error cwd /home/etudiant/ILeakable
+25 error node -v v0.10.29
+26 error npm -v 1.4.21
+27 error code ELIFECYCLE
+28 verbose exit [ 1, true ]

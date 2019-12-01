@@ -1,0 +1,58 @@
+db.users.insert([
+    {
+        mail: "bob@bob.bob",
+        firstName: "bob",
+        lastName: "bobette",
+        password: "(@*!1731817489172(",
+        Account: {
+            number: "123klj41hi51512",
+            money: "100.12",
+            expiration: "2021/10/02",
+            secureCode: "1241"
+        },
+        transactions: [
+            {
+                time: "1574694531430",
+                operation: "Kfc",
+                description: "Eat more get more.",
+                amount: "10",
+                type: "withdraw"
+            },
+            {
+                time: "1574694541430",
+                operation: "Desjardin",
+                description: "Bank to bank buisness",
+                amount: "100",
+                type: "deposit"
+            }
+        ]
+    },
+    {
+        mail: "jocelyn@allard.ca",
+        firstName: "jocelyn",
+        lastName: "allard",
+        password: "(@*!17421517489172(",
+        Account: {
+            number: "123klj1fas51512",
+            money: "500.12",
+            expiration: "2020/11/12",
+            secureCode: "4341"
+        },
+        transactions: [
+            {
+                time: "1574694536430",
+                operation: "Tim Horton",
+                description: "Pay more get less",
+                amount: "40",
+                type: "withdraw"
+            },
+            {
+                time: "1574694541430",
+                operation: "Banque national",
+                description: "Bank to bank shit buisness",
+                amount: "5",
+                type: "deposit"
+            }
+        ]
+    }
+]);

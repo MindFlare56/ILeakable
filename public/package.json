@@ -1,11 +1,12 @@
 {
   "dependencies": {
-    "startbootstrap-sb-admin-2": "~4.0.7",
-    "@fortawesome/fontawesome-free": "5.10.2",
+    "@fortawesome/fontawesome-free": "^5.10.2",
     "bootstrap": "4.3.1",
     "chart.js": "2.8.0",
     "datatables.net-bs4": "1.10.19",
     "jquery": "3.4.1",
-    "jquery.easing": "^1.4.1"
+    "jquery.easing": "^1.4.1",
+    "nunito-fontface": "^0.7.3",
+    "startbootstrap-sb-admin-2": "~4.0.7"
   }
 }

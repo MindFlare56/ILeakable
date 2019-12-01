@@ -1,22 +1,42 @@
 const express = require('express');
 const router = express.Router();
+const passwordHash = require('password-hash');
 
-router.get('/login', function(req, res, next) {
+router.get('/', function(req, res) {
     res.render('login.pug');
 });
 
-router.get('/1234', function(req, res, next) {
-    res.render('login.pug');
-});
-/*
-express.post('/submit-login', function(req, res, next) {
-    //todo
-    res.render('main.pug');
+router.post('/submit-login', function(req, res) {
+    res.redirect('/main');
 });
 
-express.post('/submit-register', function(req, res, next) {
-    //todo
-    res.render('login.pug');
+router.post('/submit-register', function(req, res) {
+    const form = req.body;
+    authenticate(form, res);
 });
-*/
+
+function authenticate(form, res) {
+    let message = "";
+    const mail = form.mail;
+    const firstName = form.firstName;
+    const lastName = form.lastName;
+    const password = form.password;
+    const passwordConfirm = form.passwordConfirm;
+    verifyPassword(password, passwordConfirm);
+    verifyMail(mail, res);
+}
+
+function verifyMail(mail) {
+
+}
+
+function verifyPassword(password, passwordConfirm) {
+    if (password === passwordConfirm) {
+        const hashedPassword = passwordHash.generate(password);
+        return hashedPassword + " \n";
+    } else {
+        return "password doesnt match \n";
+    }
+}
+
 module.exports = router;
