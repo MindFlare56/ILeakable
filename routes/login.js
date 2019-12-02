@@ -1,17 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const userBroker = require('../brokers/UserBroker');
 
 let _res;
 let _form;
 
 router.get('/', function(req, res) {
-    res.render('login.pug');
-});
+    userBroker.findUsers((users) => {
+        res.send(users);
+        userBroker.transferMoney(users[0], users[1], 10, () => {
 
-router.get('/', function(req, res) {
-    res.render('login.pug');
+        });
+    });
+    //res.render('login.pug');
 });
 
 router.post('/', function(req, res) {
@@ -34,13 +36,24 @@ function initPost(req, res) {
 }
 
 function authenticate() {
-    userBroker.findByAuth(_form.mail, crypt(_form.password), (result) => {
-        if (decrypt(_form.password, result['password'])) {
-            _res.redirect('/main');
-        }
-        _res.send('doesnt match ' + _form.password + " / " + crypt(_form.password));
-    });
+    validateLoginInformation(_form.mail);
 }
+
+function validateLoginInformation(mail) {
+    verifyMail(mail);
+    userBroker.findByAuth(mail, (user) => {
+        _res.send(user);
+        decrypt(user['password'], (valid) => {
+            if (valid) {
+                return _res.redirect('/main');
+            }
+            return _res.redirect('/error');
+        })
+    });
+
+}
+
+
 
 function register() {
     const mail = _form.mail;
@@ -48,15 +61,20 @@ function register() {
     const lastName = _form.lastName;
     const password = _form.password;
     const passwordConfirm = _form.passwordConfirm;
-    const hash = verifyPassword(password, passwordConfirm);
+    validateRegisterInformation(mail, firstName, lastName, password, passwordConfirm);
+}
+
+function validateRegisterInformation(mail, firstName, lastName, password, passwordConfirm) {
     verifyMail(mail);
-    onValidRegistration(mail, firstName, lastName, hash);
+    verifyPassword(password, passwordConfirm);
+    crypt((hash) => {
+        onValidRegistration(mail, firstName, lastName, hash);
+    })
 }
 
 function onValidRegistration(mail, firstName, lastName, hash) {
     userBroker.insertUser(mail, firstName, lastName, hash, () => {
-        _res.redirect('/');
-        //todo check how to redirect with the result
+        return _res.redirect('/');
     });
 }
 
@@ -69,15 +87,31 @@ function verifyName(firstName, lastName) {
 }
 
 function verifyPassword(password, passwordConfirm) {
-    return password === passwordConfirm ? crypt(password) : _res.redirect('/error');
+    return password === passwordConfirm;
 }
 
-function crypt(password, saltRound = 11) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(saltRound));
+function crypt(callback, password = '', saltRound = 11) {
+    password = getDefaultPasswordField(password);
+    bcrypt.genSalt(saltRound, function(saltError, salt) {
+        bcrypt.hash(password, salt, function(error, hash) {
+            callback(hash);
+        });
+    });
 }
 
-function decrypt(password, hash) {
-    bcrypt.compareSync(password, hash);
+function decrypt(hash, callback, password = '') {
+    password = getDefaultPasswordField(password);
+    bcrypt.compare(password, hash, function(error, result) {
+        callback(result);
+    });
+}
+
+
+function getDefaultPasswordField(password) {
+    if (password === '') {
+        password = _form.password;
+    }
+    return password;
 }
 
 module.exports = router;

@@ -1,13 +1,16 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var app = express();
-var bodyParser = require('body-parser');
-// view engine setup
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const app = express();
+const bodyParser = require('body-parser');
+const helmet = require('helmet');
+const session = require('express-session');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+app.set('trust proxy', 1);
+app.use(helmet());
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(logger('dev'));
@@ -15,6 +18,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.disable('x-powered-by');
+
+app.use( session({
+      secret : 'ajC8h;',
+      name : 'leak',
+    })
+);
+
+const expiryDate = new Date( Date.now() + 10 * 60 * 1000 );
+app.use(session({
+      name: 'session',
+      keys: ['key1', 'key2'],
+      cookie: { secure: true,
+        httpOnly: true,
+        domain: 'example.com',
+        path: 'foo/bar',
+        expires: expiryDate,
+        bob: 'lewis'
+      }
+    })
+);
 
 let indexRouter = require('./routes/index');
 let loginRouter = require('./routes/login');
@@ -24,20 +48,16 @@ app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/main', mainRouter);
 
-// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-  var router = express.Router();
+  const router = express.Router();
   console.log(router);
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
   res.status(err.status || 500);
   res.render('error.pug');
 });
