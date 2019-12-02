@@ -8,4 +8,5 @@ router.get('/', function(req, res) {
 router.get('/fund', function(req, res) {
     res.render('mainfund.pug');
 });
+
 module.exports = router;
