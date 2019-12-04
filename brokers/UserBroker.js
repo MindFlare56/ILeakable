@@ -24,21 +24,40 @@ class UserBroker {
         findAll(onResult);
     }
 
-    transferMoney(userFrom, userTo, amount, onResult) {
-        createConnection(database, (database) => {
-            //todo fix this query
-            const query = [
-                {'_id': userFrom['_id'], $set: {Account: {money: Account['money'] - amount}}},
-                {}
-            ];
-            database.collection(table).updateMany(query, amount, function (error, result) {
-                if (err) throw err;
-                //result.result.nModified  (doc modified)
-                onResult(result);
-                db.close;
-            });
-        })
+    transferMoney(userFrom, accountFrom, userTo, accountTo, amount, onResult) {
+        this.updateMoney(userFrom, accountFrom, -amount, () => {
+            this.updateMoney(userTo, accountTo, amount, onResult);
+        });
     }
+
+    updateMoney(user, accountName, amount, onResult) {
+        updateWhere({"_id": user["_id"], "accounts.name": accountName},{$inc: {"accounts.$.money": amount}}, onResult);
+    }
+
+    findUserById(id, onResult) {
+        findSingle({"_id": id}, onResult);
+    }
+}
+
+//todo test
+function update(query, onResult) {
+    createConnection(database, (database) => {
+        database.collection(table).update(query).toArray(function (error, result) {
+            if (error) throw error;
+            onResult(result);
+            database.close;
+        });
+    }, onResult);
+}
+
+function updateWhere(filter, update, onResult) {
+    createConnection(database, (database) => {
+        database.collection(table).updateMany(filter, update, (error, result) => {
+            if (error) throw error;
+            onResult(result);
+            database.close;
+        });
+    }, onResult);
 }
 
 function findAll(onResult) {

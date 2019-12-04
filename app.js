@@ -42,7 +42,7 @@ app.use(session({
 
 let indexRouter = require('./routes/index');
 let loginRouter = require('./routes/login');
-let mainRouter = require('./routes/main');
+let mainRouter = require('./routes/MainRouter');
 
 app.use('/', indexRouter);
 app.use('/login', loginRouter);

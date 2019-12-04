@@ -7,13 +7,7 @@ let _res;
 let _form;
 
 router.get('/', function(req, res) {
-    userBroker.findUsers((users) => {
-        res.send(users);
-        userBroker.transferMoney(users[0], users[1], 10, () => {
-
-        });
-    });
-    //res.render('login.pug');
+    res.render('login.pug');
 });
 
 router.post('/', function(req, res) {

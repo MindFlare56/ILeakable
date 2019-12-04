@@ -36,6 +36,10 @@ mixin main()
             a.nav-link(href='/main/fund')
               i.fas.fa-fw.fa-plus
               span.after-fas Operations
+          li.nav-item
+            a.nav-link(href='/main/accountSelection')
+              i.fas.fa-fw.fa-plus
+              span.after-fas Change account
           hr.sidebar-divider
           // Heading
           .sidebar-heading
@@ -74,6 +78,27 @@ mixin main()
       #content-wrapper.d-flex.flex-column
         block main-content
 
+mixin accountSelection()
+  #content
+    // Begin Page Content
+    .container-fluid
+      each account in accounts
+        br
+        .mb-4
+          .card.border-left-success.shadow.h-100.py-2
+            .card-body
+              .row
+                a(href='#')
+                  .fas.fa-exchange-alt.margin-top-8.margin-left-8.margin-right-24
+                .row.margin-left-16
+                  a(href='#')
+                    .fas.fa-credit-card.fa-2x.margin-side-8
+                  span.margin-side-8=('# ' + account.number)
+                  span.margin-left-16=("Balance: " + account.money + "$")
+
+    +footer()
+    +main-scripts()
+
 mixin home()
   #content
     // Begin Page Content
@@ -100,8 +125,8 @@ mixin home()
                   .row.margin-left-16
                     a(href='#')
                       .fas.fa-credit-card.fa-2x.margin-side-8
-                    span.margin-side-8=("#124441421412")
-                    span.margin-left-16=("Balance: 400000" + "$")
+                    span.margin-side-8=('# ' + account.number)
+                    span.margin-left-16=("Balance: " + account.money + "$")
       // DataTales Example
       .card.shadow.mb-4
         .card-header.py-3
@@ -116,43 +141,16 @@ mixin home()
                   th Time
                   th Description
                   th Amount
-                  th Balance
+                  th Balance before
               tbody
-                tr
-                  td 2019-11-24
-                  td Hurteau
-                  td 8:40pm
-                  td That's the stuff
-                  td 10.00$
-                  td $140,800
-                tr
-                  td 2019-11-24
-                  td Pornhub.com
-                  td 4:20pm
-                  td We won't tell you teacher
-                  td 100.00$
-                  td $150,800
-                tr
-                  td 2019-11-23
-                  td Amazon.ca
-                  td 9:00am
-                  td Two day delivery or not
-                  td 10.00$
-                  td $250,800
-                tr
-                  td 2019-11-22
-                  td Cegepst
-                  td 11:22am
-                  td Welcome to the real world jackass
-                  td 40.00$
-                  td $260,800
-                tr
-                  td 2019-10-12
-                  td Tim Horton
-                  td 12:40pm
-                  td Less for more
-                  td 30.00$
-                  td $400,800
+                each transaction in user.transactions
+                  tr
+                    td=(transaction.date)
+                    td=(transaction.operation)
+                    td=(transaction.hour)
+                    td=(transaction.description)
+                    td=(transaction.amount)
+                    td=(transaction.balance)
       // Area Chart
       .card.shadow.mb-4
         .card-header.py-3
@@ -178,35 +176,6 @@ mixin fund()
           p.mb-4 In this section you will be able to add and send funds.
         .heading-menu.col-4
       .row
-        .col-lg-8
-          .card.shadow.mb-4
-            .card-header.py-3
-              h6.m-0.font-weight-bold.text-primary Add fund
-            .card-body
-              .row
-                table.col-7.margin-side-32
-                  thead
-                    tr
-                      th Accounts
-                  tbody#add-fund-table
-                    tr
-                      td
-                        br
-                        +radioCreditCard('Accounts', 1231232125, "")
-                        br
-                        +radioCreditCard('Accounts2', 234124123, "")
-
-                .col-4
-                  br
-                  br
-                  .row#add-fund
-                    h5 Amount:
-                    form.margin-left-8.margin-right-4
-                      input
-                    h5.margin-right-24 $
-                    a.btn.btn-primary.btn-circle.btn-sm(href='#')
-                      i.fas.fa-paper-plane
-
         .col-lg-4
           .mb-4
             .card.border-left-success.shadow.h-100.py-2
@@ -215,46 +184,43 @@ mixin fund()
                   .col
                     .text-xs.font-weight-bold.text-success.text-uppercase.mb-1 Accounts (Balances)
                     br
-                    +creditCard('Accounts', 1231232125, 40000, "")
-                    hr
-                    +creditCard('Accounts2', 234124123, 10000, "")
-                    hr
-
+                    each account in accounts
+                      +creditCard(account.name, account.number, account.money, "")
+                      hr
         .col-lg-8
           .card.shadow.mb-4
             .card-header.py-3
-              h6.m-0.font-weight-bold.text-danger Send fund
-            .card-body.row
-              table.col-7.margin-side-32
-                thead
-                  tr
-                    th From
-                    th To
-                    th
-                tbody#send-fund-table
-                  tr
-                    td
-                      br
-                      +radioCreditCard('Accounts', 1231232125, "")
-                      br
-                      +radioCreditCardTo('Accounts3', 834124123, "")
-                    td
-                      br
-                      +radioCreditCard('Accounts2', 234124123, "")
-                      br
-                      +radioCreditCardTo('Accounts4', 9231232125, "")
-
-              .col-4
-                br
-                br
-                .row#send-fund
-                  h5 Amount:
-                  form.margin-left-8.margin-right-4
-                    input
-                  h5.margin-right-24 $
-                  a.btn.btn-danger.btn-circle.btn-sm(href='#')
-                    i.fas.fa-paper-plane
-
+              h6.m-0.font-weight-bold.text-danger Transfer fund
+            form(action='fund/transfer' method='post' enctype='multipart/form-data')
+              .card-body.row
+                table.col-7.margin-side-32
+                  thead
+                    tr
+                      th From
+                      th To
+                      th
+                  tbody#send-fund-table
+                    tr
+                      td
+                        each account in accounts
+                          br
+                          +radioCreditCard(account.name, account.number, "")
+                          hr
+                      td
+                        each account in accounts
+                          br
+                          +radioCreditCardTo(account.name, account.number, "")
+                          hr
+                .col-4
+                  br
+                  br
+                  .row#send-fund
+                    h5 Amount:
+                    form.margin-left-8.margin-right-4
+                      input
+                    h5.margin-right-24 $
+                    button.btn.btn-danger.btn-circle.btn-sm(href='/transfer')
+                      i.fas.fa-paper-plane
   +footer()
   +main-scripts()
 
@@ -294,7 +260,7 @@ mixin creditCard(accountName, accountNumber, fund, description)
     .col-8.margin-left-16
       .row
         a.fas.fa-credit-card.fa-2x.margin-side-8
-        span=(accountName + '#' + accountNumber)
+        span=(accountName + ' ' + accountNumber)
       .row
         span=(description === "" ? "" : description)
     .col.mr-2
@@ -303,19 +269,19 @@ mixin creditCard(accountName, accountNumber, fund, description)
 mixin radioCreditCard(accountName, accountNumber, description)
   .row
     .form-check
-      input#blankRadio1.form-check-input.position-static(type='radio', name='blankRadio', value='option1', aria-label='...')
+      input#blankRadio1.form-check-input.position-static(type='radio', name='accountFrom', value='optionFrom', aria-label='...')
     a.fas.fa-credit-card.fa-2x.margin-side-8
     .col
-      span=(accountName + '#' + accountNumber)
+      span=(accountName + ' ' + accountNumber)
       br
-      span=(description === "" ? "" : description)
+      span=(description === '' ? '' : description)
 
 mixin radioCreditCardTo(accountName, accountNumber, description)
   .row
     .form-check
-      input#blankRadio2.form-check-input.position-static(type='radio', name='blankRadioTo', value='option1', aria-label='...')
+      input#blankRadio2.form-check-input.position-static(type='radio', name='accountTo', value='optionTo', aria-label='...')
     a.fas.fa-credit-card.fa-2x.margin-side-8
     .col
-      span=(accountName + '#' + accountNumber)
+      span=(accountName + ' ' + accountNumber)
       br
-      span=(description === "" ? "" : description)
+      span=(description === '' ? '' : description)

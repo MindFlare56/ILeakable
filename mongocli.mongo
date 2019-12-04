@@ -1,28 +1,54 @@
+use ILeak
+db.dropDatabase()
+use ILeak
 db.users.insert([
     {
         mail: "bob@bob.bob",
         firstName: "bob",
         lastName: "bobette",
-        password: "(@*!1731817489172(",
-        Account: {
-            number: "123klj41hi51512",
-            money: "100.12",
-            expiration: "2021/10/02",
-            secureCode: "1241"
-        },
+        password: "f6e6dfEE96e1711512CADcF4679E2f90E45b5E59F1D31eE7AD34ba87A18B",
+        accounts: [
+          {
+              name: "Checking",
+              number: "123klj41hi51512",
+              money: 100.12,
+              expiration: "2021/10/02",
+              secureCode: "1241"
+          },
+          {
+              name: "Saving",
+              number: "gdas15asd131322",
+              money: 2.05,
+              expiration: "2021/10/05",
+              secureCode: "1641"
+          },
+          {
+              name: "Credit",
+              number: "gdffhdhrwwrer321",
+              money: 400.01,
+              expiration: "2021/11/02",
+              secureCode: "1247"
+          }
+        ],
         transactions: [
             {
-                time: "1574694531430",
+                hour: "2:22 AM",
+                date: "2019-11-23",
                 operation: "Kfc",
+                accountName: "Checking",
                 description: "Eat more get more.",
-                amount: "10",
+                amount: 10,
+                balance: 110.12,
                 type: "withdraw"
             },
             {
-                time: "1574694541430",
+                hour: "4:32 AM",
+                date: "2019-11-22",
                 operation: "Desjardin",
+                accountName: "Saving",
                 description: "Bank to bank buisness",
-                amount: "100",
+                amount: 100,
+                balance: 10.12,
                 type: "deposit"
             }
         ]
@@ -31,28 +57,55 @@ db.users.insert([
         mail: "jocelyn@allard.ca",
         firstName: "jocelyn",
         lastName: "allard",
-        password: "(@*!17421517489172(",
-        Account: {
-            number: "123klj1fas51512",
-            money: "500.12",
-            expiration: "2020/11/12",
-            secureCode: "4341"
-        },
+        password: "f6e6dfEE96asd11512CADcF4679E2f90E45b5E59F1D31eE7AD34ba87A18B",
+        accounts: [
+            {
+                name: "Checking",
+                number: "1234qwew",
+                money: 500.12,
+                expiration: "2020/11/12",
+                secureCode: "4341"
+            },
+            {
+                name: "Credit",
+                number: "asdq1234",
+                money: 800.54,
+                expiration: "2020/10/12",
+                secureCode: "8452"
+            }
+        ],
         transactions: [
             {
-                time: "1574694536430",
+                hour: "2:31 PM",
+                date: "2019-12-02",
                 operation: "Tim Horton",
+                accountName: "Credit",
                 description: "Pay more get less",
-                amount: "40",
+                amount: 40,
+                balance: 540.12,
                 type: "withdraw"
             },
             {
-                time: "1574694541430",
+                hour: "4:31 PM",
+                date: "2019-11-02",
                 operation: "Banque national",
+                accountName: "Checking",
                 description: "Bank to bank shit buisness",
-                amount: "5",
+                amount: 5,
+                balance: 535.12,
+                type: "deposit"
+            },
+            {
+                hour: "4:37 PM",
+                date: "2019-11-02",
+                operation: "Banque national",
+                accountName: "Checking",
+                description: "Bank to bank shit buisness",
+                amount: 10,
+                balance: 545.12,
                 type: "deposit"
             }
         ]
     }
-]);
+])
+db.users.find().pretty()

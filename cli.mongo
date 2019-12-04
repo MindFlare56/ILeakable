@@ -1,0 +1,5 @@
+//find where id and element equal
+db.users.find({"_id": ObjectId("5de6aad2ef313036b0e4016c"), "accounts.name": "Checking"}, {"accounts.$.name": "Checking"})
+
+//update where id and element equal
+db.users.update({"_id": ObjectId("5de6aad2ef313036b0e4016c"), "accounts.name": "Credit"}, {$inc: {"accounts.$.money": 1000}})
