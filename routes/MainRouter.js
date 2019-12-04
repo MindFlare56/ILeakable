@@ -8,9 +8,9 @@ const mainRouter = new class MainRouter extends Controller {
     }
 
     defineRoutes() {
-        this.get('/', this.renderMain.bind(this));
-        this.get('/fund', this.renderFunc);
-        this.get('/accountSelection', this.renderAccountSelection);
+        this.get(this, '/', this.renderMain);
+        this.get(this, '/fund', this.renderFunc);
+        this.get(this, '/accountSelection', this.renderAccountSelection);
     }
 
     //todo replace users[0] with session user

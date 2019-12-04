@@ -22,12 +22,12 @@ module.exports = class Controller {
         return this.router;
     }
 
-    get(path, callback) {
-        const ref = this;
-        this.router.get(path, function(req, res) {
-            ref.#req = req;
-            ref.#res = res;
-            callback().bind(this);
+    get(context, path, callback) {
+        //todo fix with context
+        this.router.get(path, (req, res) => {
+            #req = req;
+            #res = res;
+            callback();
         })
     }
 
