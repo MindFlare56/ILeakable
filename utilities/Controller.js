@@ -1,7 +1,7 @@
 const _express = require('express');
 const _router = _express.Router();
 
-module.exports = class Router {
+module.exports = class Controller {
 
     router;
     express;
@@ -27,7 +27,7 @@ module.exports = class Router {
         this.router.get(path, function(req, res) {
             ref.#req = req;
             ref.#res = res;
-            callback();
+            callback().bind(this);
         })
     }
 
