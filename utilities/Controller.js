@@ -23,7 +23,11 @@ module.exports = class Controller {
         return this.router;
     }
 
-    //todo pass form to get/post/put/delete...
+    buildForm() {
+        return new Form().build;
+    }
+
+    //todo /put/delete...
     get(path, callback) {
         this.router.get(path, (req, res) => {
             this.#req = req;
@@ -48,7 +52,6 @@ module.exports = class Controller {
 
     render(file, parameters = '') {
         this.before();
-        tryBuildingParameters(parameters);
         this.#res.render(file, parameters);
         this.after();
     }
@@ -61,24 +64,3 @@ module.exports = class Controller {
 
     }
 };
-
-function tryBuildingParameters(parameters) {
-    validateParametersArray(parameters, () => {
-        for (const parameter in parameters) {
-            if (typeof parameter === 'string') {
-                const form = new Form();
-                //todo check warning
-                form.addField(parameter);
-            }
-        }
-    });
-
-}
-
-function validateParametersArray(parameters, onValid) {
-    if (Array.isArray(parameters)) {
-        if (parameters.length > 0) {
-            onValid();
-        }
-    }
-}

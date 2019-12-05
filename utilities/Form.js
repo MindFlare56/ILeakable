@@ -17,6 +17,10 @@ module.exports = class Form {
         return this.#fields;
     }
 
+    getField(name) {
+        return this.#fields[name];
+    }
+
     addField(parameter) {
         this.#fields.push(new Field(parameter));
     }
