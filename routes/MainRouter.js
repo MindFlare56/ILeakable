@@ -8,21 +8,21 @@ const mainRouter = new class MainRouter extends Controller {
     }
 
     defineRoutes() {
-        this.get(this, '/', this.renderMain);
-        this.get(this, '/fund', this.renderFunc);
-        this.get(this, '/accountSelection', this.renderAccountSelection);
+        this.get('/', this.renderMain);
+        this.get('/fund', this.renderFund);
+        this.get('/accountSelection', this.renderAccountSelection);
     }
 
     //todo replace users[0] with session user
 
-    renderMain() {
+    renderMain(router) {
         userBroker.findUsers((users) => {
             const user = users[0];
-            this.render('main.pug', {'user': user, 'account': user.accounts[0]});
+            router.render('main.pug', {'user': user, 'account': user.accounts[0]});
         });
     }
 
-    renderFunc() {
+    renderFund() {
         userBroker.findUsers((users) => {
             this.render('mainfund.pug', {'accounts': users[0].accounts});
         });

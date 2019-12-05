@@ -40,8 +40,8 @@ app.use(session({
     })
 );
 
-let indexRouter = require('./routes/index');
-let loginRouter = require('./routes/login');
+let indexRouter = require('./routes/IndexRouter');
+let loginRouter = require('./routes/LoginRouter');
 let mainRouter = require('./routes/MainRouter');
 
 app.use('/', indexRouter);

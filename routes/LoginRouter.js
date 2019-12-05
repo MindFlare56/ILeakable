@@ -1,36 +1,52 @@
-const express = require('express');
-const router = express.Router();
 const bcrypt = require('bcryptjs');
 const userBroker = require('../brokers/UserBroker');
 
-let _res;
-let _form;
+const Controller = require('../utilities/Controller');
 
-router.get('/', function(req, res) {
-    res.render('login.pug');
-});
+const mainRouter = new class MainRouter extends Controller {
 
-router.post('/', function(req, res) {
-    res.render('login.pug', { 'user': req.body.user });
-});
+    constructor() {
+        super();
+    }
 
-router.post('/submit-login', function(req, res) {
-    initPost(req, res);
-    authenticate();
-});
+    defineRoutes() {
+        this.get('/', this.renderLogin);
+        this.post('/', this.renderUserLogin);
+        this.post('/submit-login', this.authenticate);
+        this.post('/submit-register', this.register);
+    }
 
-router.post('/submit-register', function(req, res) {
-    initPost(req, res);
-    register();
-});
+    renderLogin(router) {
+        router.render('login.pug');
+    }
 
-function initPost(req, res) {
-    _res = res;
-    _form = req.body;
-}
+    renderUserLogin(router) {
+        //todo replace all this with a form method that will only use the field name and do the rest
+        router.render('login.pug', { 'user': req.body.user });
+    }
+
+    authenticate(form) {
+        form.build();
+        validateLoginInformation(form.getFields['mail']);
+    }
+
+    register(form) {
+
+    }
+};
 
 function authenticate() {
-    validateLoginInformation(_form.mail);
+    initPost(req, res);
+    this.#validateLoginInformation(_form.mail);
+}
+
+function register() {
+    const mail = _form.mail;
+    const firstName = _form.firstName;
+    const lastName = _form.lastName;
+    const password = _form.password;
+    const passwordConfirm = _form.passwordConfirm;
+    validateRegisterInformation(mail, firstName, lastName, password, passwordConfirm);
 }
 
 function validateLoginInformation(mail) {
@@ -44,18 +60,6 @@ function validateLoginInformation(mail) {
             return _res.redirect('/error');
         })
     });
-
-}
-
-
-
-function register() {
-    const mail = _form.mail;
-    const firstName = _form.firstName;
-    const lastName = _form.lastName;
-    const password = _form.password;
-    const passwordConfirm = _form.passwordConfirm;
-    validateRegisterInformation(mail, firstName, lastName, password, passwordConfirm);
 }
 
 function validateRegisterInformation(mail, firstName, lastName, password, passwordConfirm) {
@@ -108,4 +112,4 @@ function getDefaultPasswordField(password) {
     return password;
 }
 
-module.exports = router;
+module.exports = mainRouter.routes();

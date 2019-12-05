@@ -1,18 +1,34 @@
+Field = require('../utilities/Field');
 
+module.exports = class Form {
 
-class Form {
-
+    #body;
     #fields;
 
+    constructor(body) {
+        #body = body;
+    }
+
+    build() {
+
+    }
+
     getFields() {
-
+        return this.#fields;
     }
 
-    addFields() {
-
+    addField(parameter) {
+        this.#fields.push(new Field(parameter));
     }
-}
 
+    removeField(parameter) {
+        const index = this.#fields.indexOf(parameter);
+        if (index !== -1) {
+            this.#fields.splice(index, 1);
+        }
+    }
 
-
-module.exports = new Form();
+    removeFields() {
+        #fields = [];
+    }
+};
