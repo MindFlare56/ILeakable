@@ -1,18 +1,32 @@
-const express = require('express');
-const router = express.Router();
+const Controller = require('../utilities/Controller');
 
-router.get('/', function(req, res) {
-  res.redirect('/login');
-});
+const indexRouter = new class IndexRouter extends Controller {
 
-router.get('/getSession', function(req, res) {
-    res.send(req.session.user);
-    res.send('awesome');
-});
+    #router;
 
-router.get('/setSession', function(req, res) {
-    req.session.user = 'admin';
-    res.send('done');
-});
+    constructor() {
+        super();
+    }
 
-module.exports = router;
+    defineRoutes() {
+       this.get('/', this.renderLogin);
+       this.get('/getSession', this.getSession);
+       this.get('/setSession', this.setSession);
+    }
+
+    renderLogin(router) {
+        router.redirect('/login');
+    }
+
+    getSession(router) {
+        router.send(req.session.user);
+        router.send('awesome');
+    }
+
+    setSession(router) {
+        router.session.user = 'admin';
+        router.send('done');
+    }
+};
+
+module.exports = indexRouter.routes();

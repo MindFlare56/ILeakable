@@ -4,12 +4,14 @@ const Controller = require('../utilities/Controller');
 const mainRouter = new class MainRouter extends Controller {
 
     constructor() {
-        super();
+        super('/login');
     }
 
     defineRoutes() {
+        this.useRoute('/main');
         this.get('/', this.renderMain);
         this.get('/fund', this.renderFund);
+        this.post('/fund/transfer', this.transferFund);
         this.get('/accountSelection', this.renderAccountSelection);
     }
 
@@ -22,15 +24,21 @@ const mainRouter = new class MainRouter extends Controller {
         });
     }
 
-    renderFund() {
+    renderFund(router) {
         userBroker.findUsers((users) => {
-            this.render('mainfund.pug', {'accounts': users[0].accounts});
+            router.render('mainfund.pug', {'accounts': users[0].accounts});
         });
     }
 
-    renderAccountSelection() {
+    transferFund(router) {
+        const fields = router.buildForm().getFields();
+        router.send(fields.mail);
+        //userBroker.transferMoney();
+    }
+
+    renderAccountSelection(router) {
         userBroker.findUsers((users) => {
-            this.render('accountSelection.pug', {'accounts': users[0].accounts});
+            router.render('accountSelection.pug', {'accounts': users[0].accounts});
         });
     }
 };

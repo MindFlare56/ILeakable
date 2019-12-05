@@ -1,5 +1,6 @@
 const createError = require('http-errors');
 const express = require('express');
+const router = express.Router();
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -20,33 +21,26 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.disable('x-powered-by');
 
+app.use('/', require('./routes/Routers'));
+
 app.use( session({
       secret : 'ajC8h;',
       name : 'leak',
     })
 );
 
-const expiryDate = new Date( Date.now() + 10 * 60 * 1000 );
 app.use(session({
       name: 'session',
       keys: ['key1', 'key2'],
-      cookie: { secure: true,
-        httpOnly: true,
-        domain: 'example.com',
-        path: 'foo/bar',
-        expires: expiryDate,
-        bob: 'lewis'
+      cookie: {
+          secure: true,
+          httpOnly: true,
+          domain: 'example.com',
+          path: 'foo/bar',
+          expires: new Date( Date.now() + 10 * 60 * 1000 ),
+          bob: 'lewis'
       }
-    })
-);
-
-let indexRouter = require('./routes/IndexRouter');
-let loginRouter = require('./routes/LoginRouter');
-let mainRouter = require('./routes/MainRouter');
-
-app.use('/', indexRouter);
-app.use('/login', loginRouter);
-app.use('/main', mainRouter);
+}));
 
 app.use(function(req, res, next) {
   next(createError(404));

@@ -6,11 +6,14 @@ module.exports = class Form {
     #fields;
 
     constructor(body) {
-        #body = body;
+        this.#body = body;
     }
 
     build() {
-
+        //todo add things to fields
+        console.log(this.#body);
+        this.#fields = this.#body;
+        return this;
     }
 
     getFields() {
@@ -33,6 +36,6 @@ module.exports = class Form {
     }
 
     removeFields() {
-        #fields = [];
+        this.#fields = [];
     }
 };

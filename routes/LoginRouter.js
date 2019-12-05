@@ -1,17 +1,16 @@
 const bcrypt = require('bcryptjs');
 const userBroker = require('../brokers/UserBroker');
-
 const Controller = require('../utilities/Controller');
 
-const mainRouter = new class MainRouter extends Controller {
-
-    #router;
+const loginRouter = new class LoginRouter extends Controller {
 
     constructor() {
         super();
+        //this.useRoute('/login', this);
     }
 
     defineRoutes() {
+        this.useRoute('/login');
         this.get('/', this.renderLogin);
         this.post('/', this.renderPostLogin);
         this.post('/submit-login', this.authenticate);
@@ -23,18 +22,18 @@ const mainRouter = new class MainRouter extends Controller {
     }
 
     renderPostLogin(router) {
-        router.render('login.pug', { 'user': req.body.user });
+        router.render('login.pug', {
+            'user': this.buildForm().getField('use')
+        });
     }
 
     authenticate(router) {
-        this.#router = router;
-        const fields = this.buildForm().getFields();
+        const fields = router.buildForm().getFields();
         validateLoginInformation(fields.mail, fields.password);
     }
 
     register(router) {
-        this.#router = router;
-        const fields = this.buildForm().getFields();
+        const fields = router.buildForm().getFields();
         validateRegisterInformation(
             fields.mail, fields.firstName, fields.lastName, fields.password, fields.passwordConfirm
         );
@@ -45,8 +44,8 @@ function validateLoginInformation(mail, password) {
     verifyMail(mail);
     userBroker.findByAuth(mail, (user) => {
         decrypt(password, user['password'], (valid) => {
-            valid ? _res.redirect('/main') : _res.redirect('/error');
-        })
+            valid ? loginRouter.redirect('/main') : loginRouter.redirect('/error');
+        });
     });
 }
 
@@ -55,12 +54,12 @@ function validateRegisterInformation(mail, firstName, lastName, password, passwo
     verifyPassword(password, passwordConfirm);
     crypt(password, (hash) => {
         onValidRegistration(mail, firstName, lastName, hash);
-    })
+    });
 }
 
 function onValidRegistration(mail, firstName, lastName, hash) {
     userBroker.insertUser(mail, firstName, lastName, hash, () => {
-        return _res.redirect('/');
+        return loginRouter.redirect('/');
     });
 }
 
@@ -77,18 +76,17 @@ function verifyPassword(password, passwordConfirm) {
 }
 
 function crypt(password, callback, saltRound = 11) {
-    bcrypt.genSalt(saltRound, function(saltError, salt) {
-        bcrypt.hash(password, salt, function(error, hash) {
+    bcrypt.genSalt(saltRound, (saltError, salt) => {
+        bcrypt.hash(password, salt, (error, hash) => {
             callback(hash);
         });
     });
 }
 
 function decrypt(password, hash, callback) {
-    password = getDefaultPasswordField(password);
-    bcrypt.compare(password, hash, function(error, result) {
+    bcrypt.compare(password, hash, (error, result) => {
         callback(result);
     });
 }
 
-module.exports = mainRouter.routes();
+module.exports = loginRouter.routes();

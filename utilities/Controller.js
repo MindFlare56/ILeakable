@@ -4,14 +4,20 @@ const Form = require('../utilities/Form');
 
 module.exports = class Controller {
 
-    router;
-    express;
-    #req;
-    #res;
+    #request;
+    #response;
+    #route = '';
 
-    constructor() {
-        this.router = _router;
-        this.express = _express;
+    #beforeAction = (path, request, response, callback) => {
+        this.before();
+        logRequestInformation(path, request);
+        this.#request = request;
+        this.#response = response;
+        callback(this);
+    };
+
+    useRoute(defaultRoute) {
+        this.#route = defaultRoute;
     }
 
     defineRoutes() {
@@ -20,47 +26,56 @@ module.exports = class Controller {
 
     routes() {
         this.defineRoutes();
-        return this.router;
+        return _router;
     }
 
     buildForm() {
-        return new Form().build;
+        return new Form(this.#request.body).build();
     }
 
     //todo /put/delete...
     get(path, callback) {
-        this.router.get(path, (req, res) => {
-            this.#req = req;
-            this.#res = res;
-            callback(this)
+        path = this.#route + path;
+        _router.get(path, (req, res) => {
+            this.#beforeAction(path, req, res, callback);
+            this.after();
         });
     }
 
     post(path, callback) {
-        this.router.post(path, (req, res) => {
-            this.#req = req;
-            this.#res = res;
-            callback(this)
+        path = this.#route + path;
+        _router.post(path, (request, response) => {
+            this.#beforeAction(path, request, response, callback);
+            this.after();
         });
     }
 
     redirect(url) {
-        this.before();
-        this.#res.redirect(url);
-        this.after();
+        this.#response.redirect(url);
+    }
+
+    send(data) {
+        this.#response.send(data);
     }
 
     render(file, parameters = '') {
-        this.before();
-        this.#res.render(file, parameters);
-        this.after();
+        this.#response.render(file, parameters);
     }
 
     before() {
-        
+        //todo validate session
     }
 
     after() {
 
     }
 };
+
+function logRequestInformation(path, req) {
+    console.log('\n');
+    console.log('Get from: ' + path);
+    console.log('Origin: ' + req.get('origin'));
+    console.log('Host: ' + req.get('host'));
+    console.log('Req user ip: ' + req.socket.remoteAddress);
+    console.log('\n');
+}
