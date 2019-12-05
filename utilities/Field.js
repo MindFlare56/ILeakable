@@ -6,5 +6,6 @@ module.exports = class Form {
 
     constructor(parameterName) {
         this.#name = parameterName;
+        //todo check how to get body parameter with string instead of .
     }
 };
