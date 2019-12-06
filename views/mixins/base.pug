@@ -217,7 +217,7 @@ mixin fund()
                   .row#send-fund
                     h5 Amount:
                     form.margin-left-8.margin-right-4
-                      input
+                      input(type='text', name='amount', placeholder='0.00')
                     h5.margin-right-24 $
                     button.btn.btn-danger.btn-circle.btn-sm(href='/transfer')
                       i.fas.fa-paper-plane
@@ -269,7 +269,7 @@ mixin creditCard(accountName, accountNumber, fund, description)
 mixin radioCreditCard(accountName, accountNumber, description)
   .row
     .form-check
-      input#blankRadio1.form-check-input.position-static(type='radio', name='accountFrom', value='optionFrom', aria-label='...')
+      input#blankRadio1.form-check-input.position-static(type='radio', name='accF', value=(accountNumber), aria-label='...')
     a.fas.fa-credit-card.fa-2x.margin-side-8
     .col
       span=(accountName + ' ' + accountNumber)
@@ -279,7 +279,7 @@ mixin radioCreditCard(accountName, accountNumber, description)
 mixin radioCreditCardTo(accountName, accountNumber, description)
   .row
     .form-check
-      input#blankRadio2.form-check-input.position-static(type='radio', name='accountTo', value='optionTo', aria-label='...')
+      input#blankRadio2.form-check-input.position-static(type='radio', name='accT', value=(accountNumber), aria-label='...')
     a.fas.fa-credit-card.fa-2x.margin-side-8
     .col
       span=(accountName + ' ' + accountNumber)

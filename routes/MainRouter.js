@@ -32,8 +32,15 @@ const mainRouter = new class MainRouter extends Controller {
 
     transferFund(router) {
         const fields = router.buildForm().getFields();
-        router.send(fields.mail);
-        //userBroker.transferMoney();
+        const accountFrom = fields.accF;
+        const accountTo = fields.accT;
+        const amount = fields.amount;
+        //todo make a validator
+        if (accountFrom !== accountTo && amount) {
+            console.log('\n\nA transfer has been done! (' + accountFrom + ' to ' + accountTo + ' of ' + amount + '$)\n\n');
+            //todo get user account and shit to make transfer possible instead of number and shit :D
+            userBroker.transferMoney();
+        }
     }
 
     renderAccountSelection(router) {
