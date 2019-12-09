@@ -1,10 +1,11 @@
 const userBroker = require('../brokers/UserBroker');
 const Controller = require('../utilities/Controller');
+const request = require('request');
 
 const mainRouter = new class MainRouter extends Controller {
 
     constructor() {
-        super('/login');
+        super();
     }
 
     settings() {
@@ -67,25 +68,32 @@ const mainRouter = new class MainRouter extends Controller {
             const amount = parseFloat(fields.amount);
             const json = {
                 sender: {
-                    bank_Id: '113',
+                    bank_id: '113',
                     account_number: originAccountNumber
                 },
                 receiver: {
                     bank_id: destinationBankId,
+                    timestamp: Date.now(),
                     account_number: destinationAccountNumber
                 },
                 amount: amount,
                 description: 'sent from ILeakable'
             };
-            userBroker.updateMoney(user._id, originAccountNumber, amount, () => {
-                console.log('\n\n\n\n\n');
-                console.log('http://206.167.241.' + destinationBankId + '/api');
-                console.log('\n\n\n\n\n');
-                router.post('http://206.167.241.' + destinationBankId + '/api', () => {
-                    router.send(json);
+            request.post('http://206.167.241.' + destinationBankId + '/api', json, (error, result, body) => {
+                if (error) {
+                    console.log(error);
+                    return;
+                }
+                console.log(body);
+                // if (body.status === 'success') {
+                //     console.log('success');
+                // } else {
+                //     console.log(error)
+                // }
+                userBroker.updateMoney(user._id, originAccountNumber, amount, () => {
                     router.redirectBackward();
                 });
-            })
+            });
         });
     }
 

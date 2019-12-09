@@ -62,13 +62,6 @@ module.exports = class Controller {
         });
     }
 
-    postData(url, data, callback) {
-        _router.post(url, data, (request, response) => {
-            this.#beforeAction(path, request, response, callback);
-            this.after();
-        });
-    }
-
     redirect(url) {
         this.#response.redirect(url);
     }
