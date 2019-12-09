@@ -18,6 +18,8 @@ const mainRouter = new class MainRouter extends Controller {
         this.get('/fund', this.renderFund);
         this.post('/fund/transfer', this.transferFund);
         this.get('/accountSelection', this.renderAccountSelection);
+        this.post('/fund/send', this.send);
+        this.get('/113/api', this.receiveFund);
     }
 
     //todo replace users[0] with session user in useParameters
@@ -51,6 +53,44 @@ const mainRouter = new class MainRouter extends Controller {
                 });
             });
         }
+    }
+
+    //116
+    //599112135041
+    send(router) {
+        userBroker.findUsers((users) => {
+            const user = users[0];
+            const fields = router.buildForm().getFields();
+            const destinationBankId = fields.destinationBankId;
+            const destinationAccountNumber = fields.destinationAccountNumber;
+            const originAccountNumber = fields.originAccountNumber;
+            const amount = parseFloat(fields.amount);
+            const json = {
+                sender: {
+                    bank_Id: '113',
+                    account_number: originAccountNumber
+                },
+                receiver: {
+                    bank_id: destinationBankId,
+                    account_number: destinationAccountNumber
+                },
+                amount: amount,
+                description: 'sent from ILeakable'
+            };
+            userBroker.updateMoney(user._id, originAccountNumber, amount, () => {
+                console.log('\n\n\n\n\n');
+                console.log('http://206.167.241.' + destinationBankId + '/api');
+                console.log('\n\n\n\n\n');
+                router.post('http://206.167.241.' + destinationBankId + '/api', () => {
+                    router.send(json);
+                    router.redirectBackward();
+                });
+            })
+        });
+    }
+
+    receiveFund(router) {
+
     }
 
     renderAccountSelection(router) {

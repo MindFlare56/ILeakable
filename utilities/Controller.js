@@ -62,6 +62,13 @@ module.exports = class Controller {
         });
     }
 
+    postData(url, data, callback) {
+        _router.post(url, data, (request, response) => {
+            this.#beforeAction(path, request, response, callback);
+            this.after();
+        });
+    }
+
     redirect(url) {
         this.#response.redirect(url);
     }
@@ -89,22 +96,18 @@ module.exports = class Controller {
     }
 
     before(request, response) {
-        createCake(request, response);
         //todo validate session
+    }
+
+    initialiseCake(data, lifetime = '', cookieName = '') {
+        let cake = new Cake(this.#request, this.#response);
+        cake.make(data, lifetime, cookieName);
+        this.#response.send(cake);
+        throw "stop execution";
     }
 
     after() {}
 };
-
-function createCake(request, response) {
-    cake = new Cake(request.session, request.sessionCookies);
-    let session = request.session;
-    session.bob = 'bob';
-    //todo add things to session
-    response.send(session);
-    throw "stop execution";
-    return cake;
-}
 
 function addDefaultParameters(parameters, defaultParameters) {
     for (const parameter in defaultParameters) {

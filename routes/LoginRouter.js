@@ -4,11 +4,6 @@ const Controller = require('../utilities/Controller');
 
 const loginRouter = new class LoginRouter extends Controller {
 
-    constructor() {
-        super();
-        //this.useRoute('/login', this);
-    }
-
     defineRoutes() {
         this.useRoute('/login');
         this.get('/', this.renderLogin);
@@ -44,9 +39,14 @@ function validateLoginInformation(mail, password) {
     verifyMail(mail);
     userBroker.findByAuth(mail, (user) => {
         decrypt(password, user['password'], (valid) => {
-            valid ? loginRouter.redirect('/main') : loginRouter.redirect('/error');
+            valid ? onLoginIsValid(loginRouter, user) : loginRouter.redirect('/error');
         });
     });
+}
+
+function onLoginIsValid(router, user) {
+    router.initialiseCake(user, 1000000);
+    router.redirect('/main');
 }
 
 function validateRegisterInformation(mail, firstName, lastName, password, passwordConfirm) {

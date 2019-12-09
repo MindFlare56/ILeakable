@@ -2,30 +2,39 @@
 
 const cake = class Cake {
 
-    #session;
+    #request;
+    #response;
     #cookies;
+    #session;
 
-    constructor(session, cookies) {
-        this.#session = session;
-        this.#cookies = cookies;
+    constructor(request, response) {
+        this.#request = request;
+        this.#response = response;
+        this.#session = request.session;
+        this.#cookies = request.cookies;
     }
 
-    make(data, lifetime, cookieName) {
-        //create sid
+    make(data, lifetime = -1, cookieName = '') {
+        const sid = this.#request.sessionID;
+        if (cookieName === '') {
+            cookieName = sid;
+        }
+        if (lifetime === -1) {
+            lifetime = 3600000; //hour
+        }
+        //todo fix
+        //this.bake(sid, lifetime, cookieName)
+    }
 
+    bake(sid, lifetime, cookieName) {
+        this.#response.cookie(cookieName, sid);
+        this.#response.send(this.#session);
+        this.#session.cookie.maxAge(lifetime);
     }
 
     getSession() {
         return this.#session;
     }
 };
-
-function bake(sid, lifetime, cookieName) {
-    //create coockie with name
-    //destroy previous
-    //set lifetime
-    //set value
-    //send
-}
 
 module.exports = cake;

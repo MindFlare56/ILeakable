@@ -193,7 +193,7 @@ mixin fund()
           .card.shadow.mb-4
             .card-header.py-3
               h6.m-0.font-weight-bold.text-danger Transfer fund
-            form(action='transfer' method='post')
+            form(action='/main/fund/transfer' method='post')
               .card-body.row
                 table.col-7.margin-side-32
                   thead
@@ -223,6 +223,31 @@ mixin fund()
                     h5.margin-right-24 $
                     button.btn.btn-danger.btn-circle.btn-sm(href='/transfer')
                       i.fas.fa-paper-plane
+
+        .col-lg-12
+          .card.shadow.mb-4
+            .card-header.py-3
+              h6.m-0.font-weight-bold.text-danger Send fund
+            form(action='/main/fund/send' method='post')
+              .card-body
+                .row
+                  .form-group.col-3
+                    label=("Destination bank id: ")
+                    input(type='text', name='destinationBankId')
+                  .form-group.col-3
+                    label=("Destination account number: ")
+                    input(type='text', name='destinationAccountNumber')
+                  .form-group.col-3
+                    label=("amount: ")
+                    input(type='text', name='amount')
+                .row
+                  .form-group
+                    label=("Origin account number: ")
+                    input(type='text', name='originAccountNumber')
+                  .form-group
+                    button.btn.btn-danger.btn-circle.btn-sm(type='submit')
+                      i.fas.fa-paper-plane
+
   +footer()
   +main-scripts()
 
