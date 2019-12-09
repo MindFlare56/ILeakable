@@ -1,5 +1,7 @@
 const _express = require('express');
 const _router = _express.Router();
+const ObviousLog = require('./ObviousLog');
+const Cake = require('./Cake');
 const Form = require('../utilities/Form');
 
 module.exports = class Controller {
@@ -7,9 +9,15 @@ module.exports = class Controller {
     #request;
     #response;
     #route = '';
+    #defaultParameters;
+
+    constructor() {
+        this.settings();
+    }
+
 
     #beforeAction = (path, request, response, callback) => {
-        this.before();
+        this.before(request, response);
         logRequestInformation(path, request);
         this.#request = request;
         this.#response = response;
@@ -20,8 +28,12 @@ module.exports = class Controller {
         this.#route = defaultRoute;
     }
 
-    defineRoutes() {
+    settings() {}
 
+    defineRoutes() {}
+
+    useParameters(parameters) {
+        this.#defaultParameters = parameters;
     }
 
     routes() {
@@ -54,22 +66,52 @@ module.exports = class Controller {
         this.#response.redirect(url);
     }
 
+    redirectBackward() {
+        const originalUrl = this.#request.originalUrl;
+        let i = originalUrl.lastIndexOf('/');
+        i = i === -1 ? originalUrl.length : i + 1;
+        const previousUrl = originalUrl.substring(0, i);
+        this.#response.redirect(previousUrl);
+    }
+
+    redirectDefault() {
+        //todo test
+        this.#response.redirect(this.#route)
+    }
+
     send(data) {
         this.#response.send(data);
     }
 
     render(file, parameters = '') {
+        parameters = addDefaultParameters(parameters, this.#defaultParameters);
         this.#response.render(file, parameters);
     }
 
-    before() {
+    before(request, response) {
+        createCake(request, response);
         //todo validate session
     }
 
-    after() {
-
-    }
+    after() {}
 };
+
+function createCake(request, response) {
+    cake = new Cake(request.session, request.sessionCookies);
+    let session = request.session;
+    session.bob = 'bob';
+    //todo add things to session
+    response.send(session);
+    throw "stop execution";
+    return cake;
+}
+
+function addDefaultParameters(parameters, defaultParameters) {
+    for (const parameter in defaultParameters) {
+        parameters[parameter] = defaultParameters[parameter];
+    }
+    return parameters;
+}
 
 function logRequestInformation(path, req) {
     console.log('\n');

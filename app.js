@@ -23,7 +23,7 @@ app.disable('x-powered-by');
 
 app.use('/', require('./routes/Routers'));
 
-app.use( session({
+app.use(session({
       secret : 'ajC8h;',
       name : 'leak',
     })
@@ -33,7 +33,7 @@ app.use(session({
       name: 'session',
       keys: ['key1', 'key2'],
       cookie: {
-          secure: true,
+          secure: false,
           httpOnly: true,
           domain: 'example.com',
           path: 'foo/bar',

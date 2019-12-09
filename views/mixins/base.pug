@@ -143,14 +143,16 @@ mixin home()
                   th Amount
                   th Balance before
               tbody
-                each transaction in user.transactions
-                  tr
-                    td=(transaction.date)
-                    td=(transaction.operation)
-                    td=(transaction.hour)
-                    td=(transaction.description)
-                    td=(transaction.amount)
-                    td=(transaction.balance)
+                if user !== null
+                  if user.transactions !== null
+                    each transaction in user.transactions
+                      tr
+                        td=(transaction.date)
+                        td=(transaction.operation)
+                        td=(transaction.hour)
+                        td=(transaction.description)
+                        td=(transaction.amount)
+                        td=(transaction.balance)
       // Area Chart
       .card.shadow.mb-4
         .card-header.py-3
@@ -191,7 +193,7 @@ mixin fund()
           .card.shadow.mb-4
             .card-header.py-3
               h6.m-0.font-weight-bold.text-danger Transfer fund
-            form(action='fund/transfer' method='post')
+            form(action='transfer' method='post')
               .card-body.row
                 table.col-7.margin-side-32
                   thead

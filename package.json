@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "gulp && forever stopall && clear && forever -o out.log -e err.log ./bin/www"
+    "start": "gulp && forever stopall && forever -o out.log -e err.log ./bin/www"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.11.2",

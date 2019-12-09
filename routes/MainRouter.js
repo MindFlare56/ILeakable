@@ -7,6 +7,11 @@ const mainRouter = new class MainRouter extends Controller {
         super('/login');
     }
 
+    settings() {
+        this.useRoute('/main');
+        this.useParameters({"user": null});
+    }
+
     defineRoutes() {
         this.useRoute('/main');
         this.get('/', this.renderMain);
@@ -15,7 +20,7 @@ const mainRouter = new class MainRouter extends Controller {
         this.get('/accountSelection', this.renderAccountSelection);
     }
 
-    //todo replace users[0] with session user
+    //todo replace users[0] with session user in useParameters
 
     renderMain(router) {
         userBroker.findUsers((users) => {
@@ -32,14 +37,19 @@ const mainRouter = new class MainRouter extends Controller {
 
     transferFund(router) {
         const fields = router.buildForm().getFields();
-        const accountFrom = fields.accF;
-        const accountTo = fields.accT;
-        const amount = fields.amount;
+        const accountNumberFrom = fields.accF;
+        const accountNumberTo = fields.accT;
+        let amount = fields.amount;
         //todo make a validator
-        if (accountFrom !== accountTo && amount) {
-            console.log('\n\nA transfer has been done! (' + accountFrom + ' to ' + accountTo + ' of ' + amount + '$)\n\n');
-            //todo get user account and shit to make transfer possible instead of number and shit :D
-            userBroker.transferMoney();
+        if (accountNumberFrom !== accountNumberTo && amount) {
+            userBroker.findUsers((users) => {
+                const user = users[0];
+                console.log('\n\nA transfer has been done!\n' + user._id + ' ' + accountNumberFrom + ' \nto ' + user._id + ' ' + accountNumberTo + ' \nof ' + amount + '$\n\n');
+                amount = parseFloat(amount);
+                userBroker.transferMoney(user._id, accountNumberFrom, user._id, accountNumberTo, amount, () => {
+                    router.redirectBackward();
+                });
+            });
         }
     }
 

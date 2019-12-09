@@ -26,14 +26,14 @@ module.exports = new class UserBroker extends Broker {
         this.findAll(onResult);
     }
 
-    transferMoney(userFrom, accountFrom, userTo, accountTo, amount, onResult) {
-        this.updateMoney(userFrom, accountFrom, -amount, () => {
-            this.updateMoney(userTo, accountTo, amount, onResult);
+    transferMoney(userIdFrom, accountNumberFrom, userIdTo, accountNumberTo, amount, onResult) {
+        this.updateMoney(userIdFrom, accountNumberFrom, -amount, () => {
+            this.updateMoney(userIdTo, accountNumberTo, amount, onResult);
         });
     }
 
-    updateMoney(user, accountName, amount, onResult) {
-        this.updateWhere({"_id": user["_id"], "accounts.name": accountName},{$inc: {"accounts.$.money": amount}}, onResult);
+    updateMoney(userId, accountNumber, amount, onResult) {
+        this.updateWhere({"_id": userId, "accounts.number": accountNumber},{$inc: {"accounts.$.money": amount}}, onResult);
     }
 
     findUserById(id, onResult) {
