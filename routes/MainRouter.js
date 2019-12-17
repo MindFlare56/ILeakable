@@ -1,8 +1,9 @@
 const userBroker = require('../brokers/UserBroker');
+const rule = require('../utilities/Rule');
 const Controller = require('../utilities/Controller');
 const request = require('request');
 
-const mainRouter = new class MainRouter extends Controller {
+const router = new class MainRouter extends Controller {
 
     settings() {
         this.useRenderRoute('/main');
@@ -31,16 +32,18 @@ const mainRouter = new class MainRouter extends Controller {
         const accountNumberFrom = fields.accF;
         const accountNumberTo = fields.accT;
         let amount = fields.amount;
-        //todo make a validator
-        if (accountNumberFrom !== accountNumberTo && amount) {
-            userBroker.findUsers((users) => {
-                const user = users[0];
-                console.log('\n\nA transfer has been done!\n' + user._id + ' ' + accountNumberFrom + ' \nto ' + user._id + ' ' + accountNumberTo + ' \nof ' + amount + '$\n\n');
-                amount = parseFloat(amount);
-                userBroker.transferMoney(user._id, accountNumberFrom, user._id, accountNumberTo, amount, () => {
-                    router.redirectBackward();
+        validateAmount(amount);
+        if (!router.hasError()) {
+            if (accountNumberFrom !== accountNumberTo && amount) {
+                userBroker.findUsers((users) => {
+                    const user = users[0];
+                    console.log('\n\nA transfer has been done!\n' + user._id + ' ' + accountNumberFrom + ' \nto ' + user._id + ' ' + accountNumberTo + ' \nof ' + amount + '$\n\n');
+                    amount = parseFloat(amount);
+                    userBroker.transferMoney(user._id, accountNumberFrom, user._id, accountNumberTo, amount, () => {
+                        router.redirectBackward();
+                    });
                 });
-            });
+            }
         }
     }
 
@@ -53,40 +56,45 @@ const mainRouter = new class MainRouter extends Controller {
             const destinationBankId = fields.destinationBankId;
             const destinationAccountNumber = fields.destinationAccountNumber;
             const originAccountNumber = fields.originAccountNumber;
-            const amount = parseFloat(fields.amount);
-            const json = {
-                sender: {
-                    bank_id: '113',
-                    account_number: originAccountNumber
-                },
-                receiver: {
-                    bank_id: destinationBankId,
-                    account_number: destinationAccountNumber
-                },
-                amount: amount,
-                timestamp: Date.now(),
-                description: 'sent from ILeakable'
-            };
-            request.post('http://206.167.241.' + destinationBankId + '/api', json, (error, result, body) => {
-                console.log('\n\n\N\N\n');
-                console.log(body);
-                console.log('\n\n\N\N\n');
-                if (error) {
-                    console.log(error);
-                    return;
-                }
-                console.log(body);
-                if (body.status === 'success') {
-                    console.log('success');
-                } else {
-                    console.log(error)
-                }
-                userBroker.updateMoney(user._id, originAccountNumber, -amount, () => {
-                    router.redirectBackward();
+            validateAmount(fields.amount);
+            validateBankId(fields.destinationBankId);
+            if (!router.hasError()) {
+                const amount = parseFloat(fields.amount);
+                const json = this.#requestJson(originAccountNumber, destinationBankId, destinationAccountNumber, amount);
+                request.post('http://206.167.241.' + destinationBankId + '/api', json, (error, result, body) => {
+                    if (error) {
+                        console.log(error);
+                        return;
+                    }
+                    if (body.status === 'success') {
+                        console.log('success');
+                    } else {
+                        console.log(error);
+                        return;
+                    }
+                    userBroker.updateMoney(user._id, originAccountNumber, -amount, () => {
+                        router.redirectBackward();
+                    });
                 });
-            });
+            }
         });
     }
+
+    #requestJson = function(originAccountNumber, destinationBankId, destinationAccountNumber, amount) {
+        return {
+            sender: {
+                bank_id: '113',
+                account_number: originAccountNumber
+            },
+            receiver: {
+                bank_id: destinationBankId,
+                account_number: destinationAccountNumber
+            },
+            amount: amount,
+            timestamp: Date.now(),
+            description: 'sent from ILeakable'
+        }
+    };
 
     renderAccountSelection(router) {
         userBroker.findUsers((users) => {
@@ -95,4 +103,16 @@ const mainRouter = new class MainRouter extends Controller {
     }
 };
 
-module.exports = mainRouter.routes();
+function validateAmount(amount) {
+    if (!rule.decimal(amount)) {
+        router.addError('Amount must be a positive decimal number');
+    }
+}
+
+function validateBankId(destinationBankId) {
+    if (!rule.isInRange(destinationBankId, 110, 130)) {
+        router.addError('Invalid bank id');
+    }
+}
+
+module.exports = router.routes();

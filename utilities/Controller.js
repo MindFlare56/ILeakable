@@ -16,6 +16,7 @@ module.exports = class Controller {
     #registerRoute = '/register';
     #homeRoute = '/home';
     #hasLoggedOnce = false;
+    #hasError = false;
 
     //todo find a way to do this without doing it everywhere or hard coding it
     constructor(homeRoute = '/main', loginRoute = '/login', registerRoute = '/login') {
@@ -28,7 +29,7 @@ module.exports = class Controller {
     validateSession() {
         if (this.#hasLoggedOnce) {
             if (this.#request.session.user && this.#request.cookies.user_sid) {
-                return this.redirectHome();
+                return;
             }
             return this.redirectLogin();
         }
@@ -76,7 +77,11 @@ module.exports = class Controller {
     }
 
     redirect(url) {
-        this.#response.redirect(url);
+        this.#hasError = false;
+        //todo clear alerts
+        if (!this.#response.headersSent) {
+            this.#response.redirect(url);
+        }
     }
 
     redirectBackward() {
@@ -118,11 +123,16 @@ module.exports = class Controller {
     }
 
     addError(message = 'Something went wrong :/', title = 'Error') {
+        this.#hasError = true;
         if (this.#defaultParameters['messages'] === undefined) {
             this.#defaultParameters['messages'] = [this.errorMessage(message, title)];
         } else {
             this.#defaultParameters['messages'].push(this.errorMessage(message, title));
         }
+    }
+
+    hasError() {
+        return this.#hasError;
     }
 
     //todo refactor in an error module
@@ -215,11 +225,11 @@ function addDefaultParameters(parameters, defaultParameters) {
 }
 
 function logRequestInformation(path, req) {
-    console.log('\n');
+    console.log('_____________________________________________\n');
     console.log('Get from: ' + path);
     console.log('Origin: ' + req.get('origin'));
     console.log('Host: ' + req.get('host'));
     console.log('Req user ip: ' + req.socket.remoteAddress);
     console.log('Time: ' + Date.now());
-    console.log('\n');
+    console.log('_____________________________________________\n');
 }

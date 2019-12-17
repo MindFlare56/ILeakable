@@ -1,6 +1,7 @@
 const userBroker = require('../brokers/UserBroker');
 const crypto = require('crypto');
 const date = require('dateformat');
+const rule = require('../utilities/Rule');
 const Controller = require('../utilities/Controller');
 
 const router = new class LoginRouter extends Controller {
@@ -30,7 +31,7 @@ const router = new class LoginRouter extends Controller {
 
     authenticate(router) {
         const fields = router.buildForm().getFields();
-        validateLoginInformation(fields.mail, fields.password);
+        validateLoginInformation(fields);
     }
 
     register(router) {
@@ -41,10 +42,16 @@ const router = new class LoginRouter extends Controller {
     }
 };
 
-function validateLoginInformation(mail, password) {
-    isMailValid(mail);
-    isPasswordValid(password);
+function validateLoginInformation(fields) {
+    const mail = fields.mail;
+    const password = fields.password;
+    validateLoginFields(mail, password);
+    if (router.hasError()) { return router.redirectLogin() }
     userBroker.findByAuth(mail, (user) => {
+        if (user == null) {
+            router.addError('User doesn\'t exist');
+            return router.redirectLogin()
+        }
         router.verifyPassword(password, user['password']).then(
             () => {
                 onLoginIsValid(user);
@@ -55,9 +62,21 @@ function validateLoginInformation(mail, password) {
     });
 }
 
-function validateRegisterInformation(mail, firstName, lastName, password, passwordConfirm) {
+function validateLoginFields(mail, password) {
     isMailValid(mail);
+    isPasswordValid(password);
+}
+
+function validateRegisterFields(mail, firstName, lastName, password, passwordConfirm) {
+    isMailValid(mail);
+    isPasswordValid(password);
+    verifyName(firstName, lastName);
     passwordMatch(password, passwordConfirm);
+}
+
+function validateRegisterInformation(mail, firstName, lastName, password, passwordConfirm) {
+    validateRegisterFields(mail, firstName, lastName, password, passwordConfirm);
+    if (router.hasError()) { return router.redirectLogin() }
     router.hashPassword(password).then(
         (hash) => {
             onValidRegistration(mail, firstName, lastName, hash);
@@ -68,7 +87,9 @@ function validateRegisterInformation(mail, firstName, lastName, password, passwo
 }
 
 function onLoginIsValid(user) {
+    router.debugJson(user);
     router.logon(user);
+    router.debugJson(router.getUser());
     return router.redirectHome();
 }
 
@@ -87,19 +108,35 @@ function onValidRegistration(mail, firstName, lastName, hash) {
 }
 
 function isMailValid(mail) {
-    //
+    if (!rule.mail(mail)) {
+        console.log("mail");
+        router.addError('Invalid mail format');
+    }
 }
 
 function isPasswordValid(password) {
-    //
+    if (!rule.password(password)) {
+        console.log("password");
+        router.addError('Invalid password format');
+    }
 }
 
 function verifyName(firstName, lastName) {
-    //
+    if (!rule.name(firstName)) {
+        console.log("firstname");
+        router.addError('First name is not valid');
+    }
+    if (!rule.name(lastName)) {
+        console.log("lastname");
+        router.addError('Last name is not valid');
+    }
 }
 
 function passwordMatch(password, passwordConfirm) {
-    return password === passwordConfirm;
+    if (!rule.sameAs(password, passwordConfirm)) {
+        console.log("match");
+        router.addError('Passwords does not match');
+    }
 }
 
 module.exports = router.routes();

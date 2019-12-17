@@ -9,6 +9,7 @@ module.exports = class UserBroker {
         console.log('%c ' + message, background + '; ' + color + '; ')
     }
 
+    //todo debug is json and send the good one
     static spacedLog(message) {
         console.log(
             '\n\n-----------------------------------------------------------------------------------------------------------\n\n'
