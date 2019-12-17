@@ -1,3 +1,4 @@
+
 const Broker = require('../utilities/Broker');
 
 module.exports = new class UserBroker extends Broker {
@@ -27,6 +28,10 @@ module.exports = new class UserBroker extends Broker {
             'accounts': accounts
         };
         this.insertOne(user, onResult)
+    }
+
+    insertTransaction(transaction, onResult) {
+        this.insertOne(transaction, onResult);
     }
 
     findUsers(onResult) {
