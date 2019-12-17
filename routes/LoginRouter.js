@@ -87,10 +87,8 @@ function validateRegisterInformation(mail, firstName, lastName, password, passwo
 }
 
 function onLoginIsValid(user) {
-    router.debugJson(user);
     router.logon(user);
-    router.debugJson(router.getUser());
-    return router.redirectHome();
+    router.redirectHome();
 }
 
 function onValidRegistration(mail, firstName, lastName, hash) {

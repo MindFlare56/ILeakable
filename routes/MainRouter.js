@@ -27,23 +27,29 @@ const router = new class MainRouter extends Controller {
         router.render('mainfund.pug', {'accounts': user.accounts});
     }
 
+    renderAccountSelection(router) {
+        const user = router.getUser();
+        router.render('accountSelection.pug', {'user': user, 'account': user.accounts});
+    }
+
     transferFund(router) {
         const fields = router.buildForm().getFields();
         const accountNumberFrom = fields.accF;
         const accountNumberTo = fields.accT;
         let amount = fields.amount;
         validateAmount(amount);
-        if (!router.hasError()) {
-            if (accountNumberFrom !== accountNumberTo && amount) {
-                userBroker.findUsers((users) => {
-                    const user = users[0];
-                    console.log('\n\nA transfer has been done!\n' + user._id + ' ' + accountNumberFrom + ' \nto ' + user._id + ' ' + accountNumberTo + ' \nof ' + amount + '$\n\n');
-                    amount = parseFloat(amount);
-                    userBroker.transferMoney(user._id, accountNumberFrom, user._id, accountNumberTo, amount, () => {
-                        router.redirectBackward();
-                    });
+        if (router.hasError()) {
+            return router.redirectHome();
+        }
+        if (accountNumberFrom !== accountNumberTo && amount) {
+            userBroker.findUsers((users) => {
+                const user = users[0];
+                console.log('\n\nA transfer has been done!\n' + user._id + ' ' + accountNumberFrom + ' \nto ' + user._id + ' ' + accountNumberTo + ' \nof ' + amount + '$\n\n');
+                amount = parseFloat(amount);
+                userBroker.transferMoney(user._id, accountNumberFrom, user._id, accountNumberTo, amount, () => {
+                    router.redirectBackward();
                 });
-            }
+            });
         }
     }
 
@@ -58,25 +64,26 @@ const router = new class MainRouter extends Controller {
             const originAccountNumber = fields.originAccountNumber;
             validateAmount(fields.amount);
             validateBankId(fields.destinationBankId);
-            if (!router.hasError()) {
-                const amount = parseFloat(fields.amount);
-                const json = this.#requestJson(originAccountNumber, destinationBankId, destinationAccountNumber, amount);
-                request.post('http://206.167.241.' + destinationBankId + '/api', json, (error, result, body) => {
-                    if (error) {
-                        console.log(error);
-                        return;
-                    }
-                    if (body.status === 'success') {
-                        console.log('success');
-                    } else {
-                        console.log(error);
-                        return;
-                    }
-                    userBroker.updateMoney(user._id, originAccountNumber, -amount, () => {
-                        router.redirectBackward();
-                    });
-                });
+            if (router.hasError()) {
+                return router.redirectHome();
             }
+            const amount = parseFloat(fields.amount);
+            const json = this.#requestJson(originAccountNumber, destinationBankId, destinationAccountNumber, amount);
+            request.post('http://206.167.241.' + destinationBankId + '/api', json, (error, result, body) => {
+                if (error) {
+                    console.log(error);
+                    return;
+                }
+                if (body.status === 'success') {
+                    console.log('success');
+                } else {
+                    console.log(error);
+                    return;
+                }
+                userBroker.updateMoney(user._id, originAccountNumber, -amount, () => {
+                    router.redirectBackward();
+                });
+            });
         });
     }
 
@@ -95,17 +102,11 @@ const router = new class MainRouter extends Controller {
             description: 'sent from ILeakable'
         }
     };
-
-    renderAccountSelection(router) {
-        userBroker.findUsers((users) => {
-            router.render('accountSelection.pug', {'accounts': users[0].accounts});
-        });
-    }
 };
 
 function validateAmount(amount) {
     if (!rule.decimal(amount)) {
-        router.addError('Amount must be a positive decimal number');
+        router.addError('Transaction amount must be a positive decimal number');
     }
 }
 

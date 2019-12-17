@@ -30,7 +30,7 @@ mixin main()
       ul#accordionSidebar.navbar-nav.sidebar.sidebar-dark.accordion
         #accordionSidebarContent
           // Sidebar - Brand
-          a.sidebar-brand.d-flex.align-items-center.justify-content-center(href='index.html')
+          a.sidebar-brand.d-flex.align-items-center.justify-content-center(href='/main')
             .sidebar-brand-text.mx-3
               | ILeakable
           // Divider
@@ -95,20 +95,21 @@ mixin accountSelection()
   #content
     // Begin Page Content
     .container-fluid
-      each account in accounts
-        br
-        .mb-4
-          .card.border-left-success.shadow.h-100.py-2
-            .card-body
-              .row
-                a(href='#')
-                  .fas.fa-exchange-alt.margin-top-8.margin-left-8.margin-right-24
-                .row.margin-left-16
+      if accounts
+        each account in accounts
+          br
+          .mb-4
+            .card.border-left-success.shadow.h-100.py-2
+              .card-body
+                .row
                   a(href='#')
-                    .fas.fa-credit-card.fa-2x.margin-side-8
-                  span.margin-side-8=('# ' + user.mail)
-                  span.margin-side-8=('# ' + account.number)
-                  span.margin-left-16=("Balance: " + account.money + "$")
+                    .fas.fa-exchange-alt.margin-top-8.margin-left-8.margin-right-24
+                  .row.margin-left-16
+                    a(href='#')
+                      .fas.fa-credit-card.fa-2x.margin-side-8
+                    span.margin-side-8=('# ' + user.mail)
+                    span.margin-side-8=('# ' + account.number)
+                    span.margin-left-16=("Balance: " + account.money + "$")
 
     +footer()
     +main-scripts()

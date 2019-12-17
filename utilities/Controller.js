@@ -193,17 +193,23 @@ module.exports = class Controller {
     disconnect() {
         if (this.#request.session.user && this.#request.cookies.user_sid) {
             this.#response.clearCookie('user_sid');
-            this.#request.session = null;
-            this.#hasLoggedOnce = false;
         }
+        this.#hasLoggedOnce = false;
     }
 
     clear() {
 
     }
 
+    //todo check why session.user keep resetting
     getUser() {
-        return this.#request.session.user
+        const session = this.#request.session;
+        if (typeof session !== 'undefined') {
+            if (typeof session.user !== 'undefined') {
+                return this.#request.session.user
+            }
+        }
+        this.redirectLogin();
     }
 
     after() {}
