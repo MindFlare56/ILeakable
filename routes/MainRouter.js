@@ -4,38 +4,26 @@ const request = require('request');
 
 const mainRouter = new class MainRouter extends Controller {
 
-    constructor() {
-        super();
-    }
-
     settings() {
-        this.useRoute('/main');
-        this.useParameters({"user": null});
+        this.useRenderRoute('/main');
     }
 
     defineRoutes() {
-        this.useRoute('/main');
         this.get('/', this.renderMain);
         this.get('/fund', this.renderFund);
         this.post('/fund/transfer', this.transferFund);
         this.get('/accountSelection', this.renderAccountSelection);
         this.post('/fund/send', this.send);
-        this.get('/113/api', this.receiveFund);
     }
 
-    //todo replace users[0] with session user in useParameters
-
     renderMain(router) {
-        userBroker.findUsers((users) => {
-            const user = users[0];
-            router.render('main.pug', {'user': user, 'account': user.accounts[0]});
-        });
+        const user = router.getUser();
+        router.render('main.pug', {'user': user, 'account': user.accounts[0]});
     }
 
     renderFund(router) {
-        userBroker.findUsers((users) => {
-            router.render('mainfund.pug', {'accounts': users[0].accounts});
-        });
+        const user = router.getUser();
+        router.render('mainfund.pug', {'accounts': user.accounts});
     }
 
     transferFund(router) {
@@ -73,32 +61,31 @@ const mainRouter = new class MainRouter extends Controller {
                 },
                 receiver: {
                     bank_id: destinationBankId,
-                    timestamp: Date.now(),
                     account_number: destinationAccountNumber
                 },
                 amount: amount,
+                timestamp: Date.now(),
                 description: 'sent from ILeakable'
             };
             request.post('http://206.167.241.' + destinationBankId + '/api', json, (error, result, body) => {
+                console.log('\n\n\N\N\n');
+                console.log(body);
+                console.log('\n\n\N\N\n');
                 if (error) {
                     console.log(error);
                     return;
                 }
                 console.log(body);
-                // if (body.status === 'success') {
-                //     console.log('success');
-                // } else {
-                //     console.log(error)
-                // }
-                userBroker.updateMoney(user._id, originAccountNumber, amount, () => {
+                if (body.status === 'success') {
+                    console.log('success');
+                } else {
+                    console.log(error)
+                }
+                userBroker.updateMoney(user._id, originAccountNumber, -amount, () => {
                     router.redirectBackward();
                 });
             });
         });
-    }
-
-    receiveFund(router) {
-
     }
 
     renderAccountSelection(router) {

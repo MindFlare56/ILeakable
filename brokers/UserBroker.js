@@ -12,12 +12,19 @@ module.exports = new class UserBroker extends Broker {
         this.findSingle({ 'mail': mail }, onResult);
     }
 
-    insertUser(mail, firstName, lastName, hash, onResult) {
+    findByAccount(accountNumber) {
+        this.findSingle({'accounts.number': accountNumber}, () => {
+
+        })
+    }
+
+    insertUser(mail, firstName, lastName, hash, accounts, onResult) {
         const user = {
             'mail': mail,
             'firstName': firstName,
             'lastName': lastName,
-            'password': hash
+            'password': hash,
+            'accounts': accounts
         };
         this.insertOne(user, onResult)
     }

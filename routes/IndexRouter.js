@@ -1,19 +1,26 @@
+const userBroker = require('../brokers/UserBroker');
 const Controller = require('../utilities/Controller');
 
 const indexRouter = new class IndexRouter extends Controller {
 
-    #router;
-
-    constructor() {
-        super();
+    defineRoutes() {
+        this.get('/', this.renderLogin);
+        this.get('/logout', this.logout);
+        this.get('/api', this.receiveFund);
     }
 
-    defineRoutes() {
-       this.get('/', this.renderLogin);
+    logout(router) {
+        router.redirectLogin();
     }
 
     renderLogin(router) {
-        router.redirect('/login');
+        router.redirectLogin();
+    }
+
+    receiveFund(router) {
+        const fields = router.buildForm().getFields();
+        const json = {'status': 'success'};
+        router.send(json);
     }
 };
 

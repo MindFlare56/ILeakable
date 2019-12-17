@@ -11,7 +11,6 @@ module.exports = class Form {
 
     build() {
         //todo add things to fields
-        console.log(this.#body);
         this.#fields = this.#body;
         return this;
     }

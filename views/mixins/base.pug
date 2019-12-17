@@ -5,9 +5,22 @@ mixin main-header()
   link(href='/node_modules/@fortawesome/fontawesome-free/css/all.min.css', rel='stylesheet')
   script(src='node_modules/startbootstrap-sb-admin-2/js/sb-admin-2.min.js')
   script(src='/node_modules/@fortawesome/fontawesome-free/js/all.min.js')
-
   //local
   link(rel='stylesheet', href='/stylesheets/main.min.css')
+
+mixin alert(type)
+  if messages !== undefined
+    - type = type || 'danger'
+    .alert
+      each message in messages
+        if message.content !== ''
+          if message.type === 'danger'
+            .alert-danger(style='padding-left: 16px;')
+              li=message.content
+          if message.type === 'info'
+            .alert-info(style='padding-left: 16px;')
+              li=message.content
+
 
 mixin main()
   body#page-top
@@ -69,7 +82,7 @@ mixin main()
           // Divider
           hr.sidebar-divider
           li.nav-item
-            a.nav-link(href='/')
+            a.nav-link(href='/logout')
               i.fas.fa-fw.fa-sign-out-alt
               span.after-fas Log out
           hr.sidebar-divider
@@ -93,6 +106,7 @@ mixin accountSelection()
                 .row.margin-left-16
                   a(href='#')
                     .fas.fa-credit-card.fa-2x.margin-side-8
+                  span.margin-side-8=('# ' + user.mail)
                   span.margin-side-8=('# ' + account.number)
                   span.margin-left-16=("Balance: " + account.money + "$")
 
@@ -125,6 +139,7 @@ mixin home()
                   .row.margin-left-16
                     a(href='#')
                       .fas.fa-credit-card.fa-2x.margin-side-8
+                    span.margin-side-8=('# ' + user.mail)
                     span.margin-side-8=('# ' + account.number)
                     span.margin-left-16=("Balance: " + account.money + "$")
       // DataTales Example
@@ -144,7 +159,7 @@ mixin home()
                   th Balance before
               tbody
                 if user !== null
-                  if user.transactions !== null
+                  if user.transactions
                     each transaction in user.transactions
                       tr
                         td=(transaction.date)
@@ -219,6 +234,7 @@ mixin fund()
                   .row#send-fund
                     h5 Amount:
                     form.margin-left-8.margin-right-4
+                      input(type='hidden', name='_csrf', value=_csrf)
                       input(type='text', name='amount', placeholder='0.00')
                     h5.margin-right-24 $
                     button.btn.btn-danger.btn-circle.btn-sm(href='/transfer')

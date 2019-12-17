@@ -1,11 +1,17 @@
-const bcrypt = require('bcryptjs');
 const userBroker = require('../brokers/UserBroker');
+const crypto = require('crypto');
+const date = require('dateformat');
 const Controller = require('../utilities/Controller');
 
-const loginRouter = new class LoginRouter extends Controller {
+const router = new class LoginRouter extends Controller {
+
+    //todo add parameter so start with register open instead of login
+
+    settings() {
+        this.useRenderRoute('/login');
+    }
 
     defineRoutes() {
-        this.useRoute('/login');
         this.get('/', this.renderLogin);
         this.post('/', this.renderPostLogin);
         this.post('/submit-login', this.authenticate);
@@ -18,7 +24,7 @@ const loginRouter = new class LoginRouter extends Controller {
 
     renderPostLogin(router) {
         router.render('login.pug', {
-            'user': this.buildForm().getField('use')
+            'user': this.buildForm().getField('user')
         });
     }
 
@@ -36,57 +42,64 @@ const loginRouter = new class LoginRouter extends Controller {
 };
 
 function validateLoginInformation(mail, password) {
-    verifyMail(mail);
+    isMailValid(mail);
+    isPasswordValid(password);
     userBroker.findByAuth(mail, (user) => {
-        decrypt(password, user['password'], (valid) => {
-            valid ? onLoginIsValid(loginRouter, user) : loginRouter.redirect('/error');
-        });
+        router.verifyPassword(password, user['password']).then(
+            () => {
+                onLoginIsValid(user);
+            }, () => {
+                router.addError('Invalid login information');
+            }
+        );
     });
-}
-
-function onLoginIsValid(router, user) {
-    router.initialiseCake(user, 1000000);
-    router.redirect('/main');
 }
 
 function validateRegisterInformation(mail, firstName, lastName, password, passwordConfirm) {
-    verifyMail(mail);
-    verifyPassword(password, passwordConfirm);
-    crypt(password, (hash) => {
-        onValidRegistration(mail, firstName, lastName, hash);
-    });
+    isMailValid(mail);
+    passwordMatch(password, passwordConfirm);
+    router.hashPassword(password).then(
+        (hash) => {
+            onValidRegistration(mail, firstName, lastName, hash);
+        }, () => {
+            router.addError('Couldn\'t not hash your password');
+        }
+    );
+}
+
+function onLoginIsValid(user) {
+    router.logon(user);
+    return router.redirectHome();
 }
 
 function onValidRegistration(mail, firstName, lastName, hash) {
-    userBroker.insertUser(mail, firstName, lastName, hash, () => {
-        return loginRouter.redirect('/');
+    const accounts = [{
+        name: "Credit",
+        number: crypto.randomBytes(8).toString('base64'),
+        money: 0,
+        expiration: date(new Date(), 'yyyy/mm/dd'),
+        secureCode: crypto.randomBytes(4).toString('base64')
+    }];
+    userBroker.insertUser(mail, firstName, lastName, hash, accounts, () => {
+        router.addInfo('User \"' + mail + '\" has been created');
+        return router.redirectLogin();
     });
 }
 
-function verifyMail(mail) {
+function isMailValid(mail) {
+    //
+}
+
+function isPasswordValid(password) {
     //
 }
 
 function verifyName(firstName, lastName) {
-
+    //
 }
 
-function verifyPassword(password, passwordConfirm) {
+function passwordMatch(password, passwordConfirm) {
     return password === passwordConfirm;
 }
 
-function crypt(password, callback, saltRound = 11) {
-    bcrypt.genSalt(saltRound, (saltError, salt) => {
-        bcrypt.hash(password, salt, (error, hash) => {
-            callback(hash);
-        });
-    });
-}
-
-function decrypt(password, hash, callback) {
-    bcrypt.compare(password, hash, (error, result) => {
-        callback(result);
-    });
-}
-
-module.exports = loginRouter.routes();
+module.exports = router.routes();

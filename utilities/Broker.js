@@ -72,7 +72,17 @@ module.exports = class Broker {
 
     findSingle(query, onResultCallback) {
         this.createConnection(this.#databaseName, () => {
-            this.#database.collection(this.#tableName).find({}, {query}).toArray((error, result) => {
+            this.#database.collection(this.#tableName).findOne(query, (error, result) => {
+                this.onError(error);
+                this.#result = result;
+                this.onResult(onResultCallback, result);
+            });
+        }, onResultCallback);
+    }
+
+    findFiltratedSingle(query, filter, onResultCallback) {
+        this.createConnection(this.#databaseName, () => {
+            this.#database.collection(this.#tableName).find(filter, query).toArray((error, result) => {
                 this.onError(error);
                 this.#result = result;
                 this.onResult(onResultCallback, result[0]);
@@ -91,7 +101,7 @@ module.exports = class Broker {
     }
 
     createConnection(databaseName, onConnectionEstablished) {
-        this.#Client.connect(this.#url, {}, (err, db) => {
+        this.#Client.connect(this.#url, {useUnifiedTopology: true}, (err, db) => {
             if (err) throw err;
             this.#database = db.db(databaseName);
             onConnectionEstablished();

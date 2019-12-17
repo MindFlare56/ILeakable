@@ -30,6 +30,7 @@ block content
           br
           br
           form.margin-side-128(action='/login/submit-login', method='post')
+            input(type='hidden', name='_csrf', value=_csrf)
             .input-group.form-group
               img.login-icon(src='/assets/mail-icon.png')
               input.form-control(type='text', placeholder='Mail address', name='mail')
@@ -45,6 +46,7 @@ block content
             h5.logo-text Leakable
           br
           form.margin-side-128(action='/login/submit-register', method='post').login-card-form
+            input(type='hidden', name='_csrf', value=_csrf)
             .input-group.form-group
               img.login-icon(src='/assets/mail-icon.png')
               input.form-control(type='text', placeholder='Mail address', name='mail')

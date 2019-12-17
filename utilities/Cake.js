@@ -14,16 +14,15 @@ const cake = class Cake {
         this.#cookies = request.cookies;
     }
 
-    make(data, lifetime = -1, cookieName = '') {
+    make(data, lifetime = null, cookieName = '') {
         const sid = this.#request.sessionID;
-        if (cookieName === '') {
+        if (cookieName === null) {
             cookieName = sid;
         }
         if (lifetime === -1) {
             lifetime = 3600000; //hour
         }
-        //todo fix
-        //this.bake(sid, lifetime, cookieName)
+        this.bake(sid, lifetime, cookieName)
     }
 
     bake(sid, lifetime, cookieName) {

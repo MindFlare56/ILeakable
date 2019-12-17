@@ -1,31 +1,41 @@
 const _express = require('express');
 const _router = _express.Router();
-const ObviousLog = require('./ObviousLog');
-const Cake = require('./Cake');
+const _debug = require('./Debug');
+const bcrypt = require('bcryptjs');
 const Form = require('../utilities/Form');
 
+//todo refactor logic somewhere else
 module.exports = class Controller {
 
     #request;
     #response;
-    #route = '';
-    #defaultParameters;
+    #renderRoute = '';
+    #defaultParameters = {};
+    #file;
+    #loginRoute = '/login';
+    #registerRoute = '/register';
+    #homeRoute = '/home';
+    #hasLoggedOnce = false;
 
-    constructor() {
+    //todo find a way to do this without doing it everywhere or hard coding it
+    constructor(homeRoute = '/main', loginRoute = '/login', registerRoute = '/login') {
+        if (homeRoute !== '') this.#homeRoute = homeRoute;
+        if (loginRoute !== '') this.#loginRoute = loginRoute;
+        if (registerRoute !== '') this.#registerRoute = registerRoute;
         this.settings();
     }
 
-
-    #beforeAction = (path, request, response, callback) => {
-        this.before(request, response);
-        logRequestInformation(path, request);
-        this.#request = request;
-        this.#response = response;
-        callback(this);
+    validateSession() {
+        if (this.#hasLoggedOnce) {
+            if (this.#request.session.user && this.#request.cookies.user_sid) {
+                return this.redirectHome();
+            }
+            return this.redirectLogin();
+        }
     };
 
-    useRoute(defaultRoute) {
-        this.#route = defaultRoute;
+    useRenderRoute(route) {
+        this.#renderRoute = route;
     }
 
     settings() {}
@@ -33,6 +43,7 @@ module.exports = class Controller {
     defineRoutes() {}
 
     useParameters(parameters) {
+        this.debugJson(parameters);
         this.#defaultParameters = parameters;
     }
 
@@ -47,15 +58,17 @@ module.exports = class Controller {
 
     //todo /put/delete...
     get(path, callback) {
-        path = this.#route + path;
+
+        path = this.#renderRoute + path;
         _router.get(path, (req, res) => {
+            this.#defaultParameters['_csrf'] = req.cookies['_csrf'];
             this.#beforeAction(path, req, res, callback);
             this.after();
         });
     }
 
     post(path, callback) {
-        path = this.#route + path;
+        path = this.#renderRoute + path;
         _router.post(path, (request, response) => {
             this.#beforeAction(path, request, response, callback);
             this.after();
@@ -74,32 +87,124 @@ module.exports = class Controller {
         this.#response.redirect(previousUrl);
     }
 
-    redirectDefault() {
-        //todo test
-        this.#response.redirect(this.#route)
+    redirectHome() {
+        this.redirect(this.#homeRoute)
+    }
+
+    redirectLogin() {
+        this.disconnect();
+        this.redirect(this.#loginRoute);
+    }
+
+    redirectRegister() {
+        this.redirect(this.#registerRoute)
     }
 
     send(data) {
         this.#response.send(data);
     }
 
-    render(file, parameters = '') {
+    render(file, parameters = {}) {
+        _debug.spacedLog("?");
+        this.#file = file;
         parameters = addDefaultParameters(parameters, this.#defaultParameters);
+        this.debugJson(parameters);
         this.#response.render(file, parameters);
     }
 
-    before(request, response) {
-        //todo validate session
+    //todo refactor in an error module
+    errorMessage(message = 'Something went wrong :/', title = 'Error', width = '') {
+        return { 'type': 'danger', 'content': message, 'title': title, 'width':  width}
     }
 
-    initialiseCake(data, lifetime = '', cookieName = '') {
-        let cake = new Cake(this.#request, this.#response);
-        cake.make(data, lifetime, cookieName);
-        this.#response.send(cake);
-        throw "stop execution";
+    addError(message = 'Something went wrong :/', title = 'Error') {
+        if (this.#defaultParameters['messages'] === undefined) {
+            this.#defaultParameters['messages'] = [this.errorMessage(message, title)];
+        } else {
+            this.#defaultParameters['messages'].push(this.errorMessage(message, title));
+        }
+    }
+
+    //todo refactor in an error module
+    informationMessage(message, title = 'Info', width = '') {
+        return { 'type': 'info', 'content': message, 'title': title, 'width':  width}
+    }
+
+    addInfo(message, title = 'Info') {
+        if (this.#defaultParameters['messages'] === undefined) {
+            this.#defaultParameters['messages'] = [this.informationMessage(message, title)];
+        } else {
+            this.#defaultParameters['messages'].push(this.informationMessage(message, title));
+        }
+    }
+
+    before() {
+        this.validateSession();
+    }
+
+    debug(message) {
+        _debug.spacedLog(message);
+    }
+
+    debugJson(message) {
+        _debug.spacedLogJson(message);
+    }
+
+    async hashPassword(password, saltRounds = 11) {
+        return await new Promise((resolve, reject) => {
+            bcrypt.hash(password, saltRounds, function(error, hash) {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(hash);
+                }
+            });
+        });
+    }
+
+    async verifyPassword(password, hash) {
+        return await new Promise((resolve, reject) => {
+            bcrypt.compare(password, hash, function(error, result) {
+                if (error) {
+                    console.log(error);
+                    reject(error);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    logon(user) {
+        this.#request.session.user = user;
+        this.#hasLoggedOnce = true;
+    }
+
+    disconnect() {
+        if (this.#request.session.user && this.#request.cookies.user_sid) {
+            this.#response.clearCookie('user_sid');
+            this.#request.session = null;
+            this.#hasLoggedOnce = false;
+        }
+    }
+
+    clear() {
+
+    }
+
+    getUser() {
+        return this.#request.session.user
     }
 
     after() {}
+
+    #beforeAction = (path, request, response, callback) => {
+        this.before();
+        logRequestInformation(path, request);
+        this.#request = request;
+        this.#response = response;
+        callback(this);
+    };
 };
 
 function addDefaultParameters(parameters, defaultParameters) {
@@ -115,5 +220,6 @@ function logRequestInformation(path, req) {
     console.log('Origin: ' + req.get('origin'));
     console.log('Host: ' + req.get('host'));
     console.log('Req user ip: ' + req.socket.remoteAddress);
+    console.log('Time: ' + Date.now());
     console.log('\n');
 }
